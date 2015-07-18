@@ -51,24 +51,69 @@ function Get(url) {
 	return res;
 }
 
-/**function titleAndMenu() {
-	this.Menu = ["Play", "Select Level", "Controls"];
+function titleAndMenu() {
+	this.Menu = [{text: "Play", top: 0, left: 200}, {text: "Select Level", top: 0, left: 125}, {text: "Controls", top: 0, left: 165}];
 	this.Title = "Camper Survival";
+	this.Clicked = false;
+	this.currentMenu = "main";
+	this.range = function(findBetween, start, finish) {
+		if(findBetween >= start && findBetween <= finish){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
 }
 
 titleAndMenu.prototype = {
 	preload: function() {
 		
-		
+		// Stuff
 		
 	},
 	create: function(){
 		
+		game.stage.backgroundColor = "#D0F5DF"; // ah that worked :p
+		var leftmagicOffset = (game.width/2) - 250;
+		var topMagicOffest = game.height/8.0;
+		
+		var title = game.add.text(leftmagicOffset+20,  topMagicOffest, this.Title, {font:"60px Arial", fill: "lightsalmon", align: "center"});
+		
+		var i = 0;
+		this.renderedElements = this.Menu.map(function(elm){
+			i++;
+			return(game.add.text(leftmagicOffset+elm.left,  (topMagicOffest+(45*(i+1))-15)+elm.top, elm.text, {font:"40px Arial", fill: "white", align: "center"}));
+		});
+		
 	},
 	update: function(){
-		
+		if (this.currentMenu === "main") {
+			if(!game.input.activePointer.isDown && this.Clicked) {
+				this.Clicked = false;
+			}
+			
+			if(game.input.activePointer.isDown && !this.Clicked) {
+				this.Clicked = true;
+				var po  = game.input.activePointer;
+				var x = po.x;
+				var y = po.y;
+
+				if (this.range(x, 395, 628) && this.range(y, 149, 189)) {
+					console.log("Button1 clicked!");
+					this.currentMenu = "null";
+					game.state.start("level_0");
+				} else if (this.range(x, 395, 628) && this.range(y, 189, 242)) {
+					console.log("Button2 clicked!");
+					this.currentMenu = "null";
+				} else if (this.range(x, 395, 628) && this.range(y, 242, 282)) {
+					console.log("Button3 clicked!");
+					this.currentMenu = "null";
+				}
+			}
+		}
 	}
-};*/
+};
 
 function Level(level) {
 	
@@ -375,8 +420,9 @@ Level.prototype = {
 };
 
 // load some levels
+game.state.add("menu", new titleAndMenu());
 game.state.add("level_0", new Level("level_0"));
 game.state.add("level_1", new Level("level_1"));
 
 // start at level_0
-game.state.start("level_1");
+game.state.start("menu");

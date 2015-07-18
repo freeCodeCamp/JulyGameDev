@@ -114,17 +114,13 @@ app.get('/api/server', function(req, res){
             error: 'Please specify a name for this server!'
         };
     }
-    else if(!req.query.maxsize) {
-        data = {
-            error: 'Please specify a maxsize for this server!'
-        };
-    }
     else {
         var id = genFreeId(servers, 'server');
         servers.push(
             new PeerStruct(id, {
                 name: req.query.name,
-                maxsize: req.query.maxsize
+                maxsize: 2,
+                currentplayers: 0
             })
         );
         data = { id: id };

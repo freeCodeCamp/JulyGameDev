@@ -20,7 +20,7 @@ ul {
 
 nav {
   position: relative;
-  margin: 20px 0;
+  margin: 20px 0 0 0;
 }
 
 nav ul {
@@ -74,6 +74,7 @@ nav a:hover{
   nav {
     position: relative;
     min-height: 40px;
+    z-index: 10;
   }
   nav ul {
     width: 180px;
@@ -227,4 +228,33 @@ footer {
 
 .startserver-button:active {
   background-color: rgb(125, 125, 125);
+}
+
+footer a {
+  color: rgb(0,0,0);
+  text-decoration: none;
+}
+
+footer a:hover {
+  color: rgb(240,75,0);
+}
+
+footer a:visited {
+  color: #777;
+}
+
+footer .icon {
+  vertical-align: middle;
+}
+
+footer .icon > svg {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  vertical-align: middle; 
+  padding: 0 1px;
+}
+
+.icon > svg path {
+    fill: #828282;
 }

@@ -21,7 +21,6 @@ content li {
   	list-style: none;
 }
 
-
 li img {
 	border-radius: 50%;
 	width: 50px;
@@ -34,7 +33,7 @@ li img {
 	vertical-align: middle;
 }
 
-h3 {
+h2 {
     /*padding-top: 20px;
     padding-bottom: 20px;*/
 }

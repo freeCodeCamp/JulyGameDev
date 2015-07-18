@@ -7,5 +7,4 @@ function Client(props) {
     $.get('/api/client', function(data){
         this.peer = new Peer(data.id);
     });
-    
 }
