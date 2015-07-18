@@ -30,6 +30,11 @@
         
         switchPlayer: function () {
             return  this.game.input.keyboard.isDown(Phaser.Keyboard.C);
+        },
+        
+        nextLevel: function () {
+            // intended for debugging only
+            return  this.game.input.keyboard.isDown(Phaser.Keyboard.L);
         }
     };
     

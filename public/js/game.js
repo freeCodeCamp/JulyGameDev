@@ -51,7 +51,7 @@ function Get(url) {
 	return res;
 }
 
-function titleAndMenu() {
+function TitleAndMenu() {
 	this.Menu = [{text: "Play", top: 0, left: 200}, {text: "Select Level", top: 0, left: 125}, {text: "Controls", top: 0, left: 165}];
 	this.Title = "Camper Survival";
 	this.Clicked = false;
@@ -66,7 +66,7 @@ function titleAndMenu() {
 	}
 }
 
-titleAndMenu.prototype = {
+TitleAndMenu.prototype = {
 	preload: function() {
 		
 		// Stuff
@@ -102,14 +102,11 @@ titleAndMenu.prototype = {
 				/*There's no really clean way to modify these but as a rule of thumb each button is the position of the button before it + 45*/
 
 				if (this.range(x, 395, 628) && this.range(y, 149, 189)) {
-					console.log("Button1 clicked!");
 					this.currentMenu = "null";
 					game.state.start("level_0");
 				} else if (this.range(x, 395, 628) && this.range(y, 189, 242)) {
-					console.log("Button2 clicked!");
 					this.currentMenu = "null";
 				} else if (this.range(x, 395, 628) && this.range(y, 242, 282)) {
-					console.log("Button3 clicked!");
 					this.currentMenu = "null";
 				}
 			}
@@ -123,7 +120,6 @@ function Level(level) {
 	this.Objects = {
 		//poops: [],  --DEPRECATED--
 		boxes: [],
-		//money: [],  --DEPRECATED--
 		campers: [],
 		hotdog: null,
 		tent: null,
@@ -137,25 +133,25 @@ function Level(level) {
 	
 	// Various custom states of the objects
 	/**this.State = {
-		Player: {
-			score: 0
-		},
 		Poop: {
 			nextPoopTimeRemaining: Math.floor((Math.random() * 40) + 20) * 1000 // Initial poop
 		} 
 	}; --DEPRECATED--*/
 	
 	// Loaded on a per level basis
-	this.Settings = Get('/levels/' + level + '.json');
+	this.Settings = Get('levels/' + level + '.json');
+	this.levelSwitchTimer = null; // when switching levels, a setTimeout is stored in here so that it only fires once and not multiple times!
 };
 
 Level.prototype = {
 	
 	// Kill/Death
-	kill: function(index){
-		this.Objects.campers[index].body.x = this.Settings.Player.spawnPoint.x;
-		this.Objects.campers[index].body.y = this.Settings.Player.spawnPoint.y;
-		// Other stuff
+	kill: function (index) {
+		if (index !== undefined && index >= 0 && index < this.Objects.campers.length) {
+			this.Objects.campers[index].body.x = this.Settings.Player.spawnPoint.x;
+			this.Objects.campers[index].body.y = this.Settings.Player.spawnPoint.y;
+			// Other stuff
+		}
 	},
 	
 	// Movable box
@@ -167,75 +163,60 @@ Level.prototype = {
 		level.Objects.boxes.push(newBox);
 	},
 	
-	// Money!!!!
-	/**spawnMoney: function(level, x, y) {
-		var newMoney = game.add.sprite(x, y, 'moneyz');
-		game.physics.arcade.enable(newMoney);
-		level.Objects.money.push(newMoney);
-	}, --DEPRECATED--*/
-	
+	// Player characters
 	spawnCamper: function (spawnX, spawnY, camperImageName) {
-		var result = game.add.sprite(spawnX, spawnY, camperImageName);
-		game.physics.arcade.enable(result);
-		result.body.gravity.y = this.Settings.Player.gravity;
-		result.anchor.setTo(.5, .5);
-		result.animations.add('idle', [0, 0]);
-		result.animations.add('walk', [0, 1]);
+		var newCamper = game.add.sprite(spawnX, spawnY, camperImageName);
+		game.physics.arcade.enable(newCamper);
+		newCamper.body.gravity.y = this.Settings.Player.gravity;
+		newCamper.anchor.setTo(.5, .5);
+		newCamper.animations.add('idle', [0, 0]);
+		newCamper.animations.add('walk', [0, 1]);
 		//result.animations.add('jumping', [1, 1]); --DEPRECATED--
-		return result;
+		return newCamper;
 	},
 	
-	preload: function (){
+	preload: function () {
         game.load.tilemap('map', 'assets/' + this.Settings.mapFile, null, Phaser.Tilemap.TILED_JSON);
         game.load.spritesheet('camper', 'assets/camper.png', 56, 95, 2);
         //game.load.spritesheet('poop', 'assets/poop.png', 16, 16, 2);  --DEPRECATED--
         game.load.spritesheet('hotdog', 'assets/hotdog.png', 52, 29, 2);
         game.load.image('level-x32', 'assets/level-x32.png');
         game.load.image('tent', 'assets/tent.png');
-        //game.load.image('flower', 'assets/flower.png');  --DEPRECATED--
         game.load.image('waitup', 'assets/waitup.png');
-        //game.load.image('tree', 'assets/tree.png');  --DEPRECATED--
         game.load.image('boxmovable', 'assets/boxmovable.png');
-        //game.load.image('moneyz', 'assets/moneyz.png'); --DEPRECATED--
 	},
 	
 	create: function () {
-	
+		var self = this;
+		
 	    game.stage.backgroundColor = '#edfffe';
 	    
 	    //Starts physics
 	    game.physics.startSystem(Phaser.Physics.ARCADE);
 	    
-	   	// Trees
-	   	// Trees may ahve to be added as two seperate sprites :p or there'll be more like weird bushes
-	    //game.add.sprite(600, 320, 'tree');  --DEPRECATED--
-	    
 	   	// Create Tent
-	    this.Objects.tent = game.add.sprite(2815, 232, 'tent');
+	    this.Objects.tent = game.add.sprite(2815, 20, 'tent');
 	    game.physics.arcade.enable(this.Objects.tent);
+	    this.Objects.tent.body.gravity.y = 1000;
 	    this.Objects.tent.scale.x = 2.5;
 	    this.Objects.tent.scale.y = 2.5;
 	    
-	    //Create player (sprite)
-	    this.Objects.campers[0] = this.spawnCamper(this.Settings.Player.spawnPoint.x, this.Settings.Player.spawnPoint.y, 'camper');
-	    this.Objects.campers[1] = this.spawnCamper(this.Settings.Player.spawnPoint.x + 100, this.Settings.Player.spawnPoint.y, 'camper');
-	    
-	    //Creates the map
+	    // Creates the map
 	    this.Objects.map = game.add.tilemap('map');
 	    this.Objects.map.addTilesetImage('level-x32');
-	    /**$.each(this.Objects.map.layers[0]['data'], function(i, e){
-	    	$.each(e, function(ii, ee){
-	    		
-	    	});
-	    }); --REDUNDANT--*/
 	    
 	    //Set collisions
 	    this.Objects.map.setCollisionBetween(1, 2);
-	    console.log(this.Objects.map);
 	    
-	    //Intializes the world.
-	    this.Objects.layer = this.Objects.map.createLayer('World');
+	    // Intialize the world
+	    var nonCollidables = this.Objects.map.createLayer('NonCollidables'); // optional
+	    if (nonCollidables) nonCollidables.resizeWorld();
+	 	this.Objects.layer = this.Objects.map.createLayer('World'); // mandatory
 	    this.Objects.layer.resizeWorld();
+	    
+	    //Create player (sprite)
+	    this.Objects.campers[0] = this.spawnCamper(this.Settings.Player.spawnPoint.x, this.Settings.Player.spawnPoint.y, 'camper');
+	    this.Objects.campers[1] = this.spawnCamper(this.Settings.Player.spawnPoint.x - 90, this.Settings.Player.spawnPoint.y, 'camper');
 	    
 	    // Camera center follows player
 	    game.camera.follow(this.Objects.campers[0]);
@@ -252,20 +233,14 @@ Level.prototype = {
 	    this.Objects.waitupmsg.visible = false;
 	    game.physics.arcade.enable(this.Objects.waitupmsg);
 	    
-	    //* Flowers
-	    /*for (var i = 0; i < 10; ++i) {
-	    	game.add.sprite(300 + (i * 110 ) + Math.floor(Math.random() * (50 - 10)) + 10, 545, 'flower');
-	    } --DEPRECATED--*/
-	    
 	    // Spawn Boxes
-	    this.spawnMovableBox(this, 1550, 300);
+	    if (this.Settings.Boxes !== undefined) {
+	    	// Boxes are now defined in the level.json files
+	    	this.Settings.Boxes.map(function (box) {
+	    		self.spawnMovableBox(self, box.x, box.y);
+	    	});
+	    }
 
-	    
-	    // Spawn Money
-	    /**this.spawnMoney(this, 1100, 500);
-	    this.spawnMoney(this, 1200, 500);
-	    this.spawnMoney(this, 1300, 500);
-	    --DEPRECATED-- */
 	},
 	
 	update: function () {
@@ -274,13 +249,12 @@ Level.prototype = {
 		// Death by going outside of world
 		this.Objects.campers.map(function(camper, index) {
 			if (camper.body.x < 0 || camper.body.x > self.Objects.map.widthInPixels || camper.body.y < 0 || camper.body.y > self.Objects.map.heightInPixels) {
-				self.kill();
+				self.kill(index);
 			}
 			
 			// Tile colllision
 			/* Logic fo working with collisions and collision data */
 			// TODO: add destruction for boxes and the dog no the lava/spikes
-			
 			var tileX = Math.round(camper.body.x / 32);
 			var tileY = Math.round(camper.body.y / 32);
 			
@@ -292,25 +266,25 @@ Level.prototype = {
 			
 			if(tileColliding != null){
 				if (tileColliding.collisionCallbackContext.index === 3  || tileColliding.collisionCallbackContext.index === 4) {
-					self.kill();
+					self.kill(index);
 				}
 			}
 			
 			/*if(tileBelowR != null){
 				if ((tileBelowR.collisionCallbackContext.index === 3  || tileBelowR.collisionCallbackContext.index === 4) && tileBelow === null) {
-					self.kill();
+					self.kill(index);
 				}
 			}
 			
 			if(tileBelowL != null){
 				if ((tileBelowL.collisionCallbackContext.index === 3  || tileBelowL.collisionCallbackContext.index === 4) && tileBelow === null) {
-					self.kill();
+					self.kill(index);
 				
 			}*/
 			
 			if(tileBelow != null){
 				if (tileBelow.collisionCallbackContext.index === 3  || tileBelow.collisionCallbackContext.index === 4) {
-					self.kill();
+					self.kill(index);
 				}
 			}
 			
@@ -319,28 +293,24 @@ Level.prototype = {
 			camper.body.velocity.x = 0;
 		});
 		
-		/**
-		this.Objects.money.forEach(function (money) {
-			if (game.physics.arcade.collide(self.Objects.camper, money)) {
-				money.destroy();
-				self.State.Player.score += 100;
-			}
-		});
-		--DEPRECATED-- */
-
+		// Tent world collision handling
+		game.physics.arcade.collide(this.Objects.tent, this.Objects.layer);
+		// Hotdog world collision handling
 		game.physics.arcade.collide(this.Objects.hotdog, this.Objects.layer);
 		
+		// Localcamper is the camper you control locally on your own machine
 		var localCamper = self.Objects.campers[self.currentCamper];
+		// Othercamper is the remote camper (player 2 connected through the network)
 		var otherCamper = self.Objects.campers[1 - self.currentCamper];
 		
-		
+		// Resolve jumping while standing on the other camper
 		var campersColliding = game.physics.arcade.collide(this.Objects.campers[0], this.Objects.campers[1]);
 		var camperStandingOnCamper = false;
 		if (campersColliding && otherCamper.body.y >= (localCamper.body.y + localCamper.body.height)) {
 			camperStandingOnCamper = true;
 		}
 		
-
+		// Resolve jumping while standing on boxes
 		var onBox = false, boxArray = this.Objects.boxes;
 
 		boxArray.forEach(function (box) {
@@ -360,8 +330,7 @@ Level.prototype = {
 		});
 		
 		
-		
-		
+		// The waitup message follows the dog
 		game.physics.arcade.moveToXY(
 			this.Objects.waitupmsg,
 			this.Objects.hotdog.body.x, 
@@ -370,7 +339,6 @@ Level.prototype = {
 		);
 		
 		//Player controls
-		
 		if (keyBinds.switchPlayer()) {
 			if (new Date().getTime() >= this.changeTimer) {
 				this.changeTimer = new Date().getTime() + 500;
@@ -401,31 +369,38 @@ Level.prototype = {
 				camper.animations.play('idle', this.Settings.Player.idleAnimationSpeed, true);
 			}
 			
-			if (keyBinds.jump() && (camper.body.onFloor() || onBox || camperStandingOnCamper)) {
+			if (keyBinds.jump() &&
+					(camper.body.onFloor() || onBox || camperStandingOnCamper)) {
+						
 				camper.body.velocity.y = -this.Settings.Player.verticalMoveSpeed;
 				//this.Objects.camper.animations.play('jumping', this.Settings.Player.walkAnimationSpeed, false); --DEPRECATED--
 			}
 			
-			if (Phaser.Math.difference(camper.body.x, this.Objects.tent.body.x) <= 50) {
+			if (Phaser.Math.difference(camper.body.x, this.Objects.tent.body.x) <= 50 || keyBinds.nextLevel()) {
 				var lvlComp = game.add.text(430, 288, "Level Complete!", {font:"32px Arial", fill: "#000", align: "center"});
 				lvlComp.fixedToCamera = true;
 				lvlComp.cameraOffset.setTo(430, 288);
 				
-				setTimeout(function(){
-					game.state.start("level_1");
-				}, 2000);
+				if (this.levelSwitchTimer === null) {
+					this.levelSwitchTimer = setTimeout(function () {
+						this.levelSwitchTimer = null;
+						console.log("Switching to state: " + self.Settings.NextLevel);
+						game.state.start(self.Settings.NextLevel);
+					}, 2000);
+				}
 			}
 		}
 
 		//Doggy Logic :)
 		/*Meow Wuff?*/
-		
-		var x_diff = Phaser.Math.difference(this.Objects.hotdog.body.x, this.Objects.campers[0].body.x);
-		var y_diff = Phaser.Math.difference(this.Objects.hotdog.body.y, this.Objects.campers[0].body.y);
+		var followingCamper = this.Objects.campers[0];
+		var x_diff = Phaser.Math.difference(this.Objects.hotdog.body.x, followingCamper.body.x);
+		var y_diff = Phaser.Math.difference(this.Objects.hotdog.body.y, followingCamper.body.y);
 		
 		if (x_diff > 50) {
+			// Walk towards the camper
 			this.Objects.hotdog.animations.play('walk', 5, true);
-			var dogLeftOfCamper = this.Objects.hotdog.body.x < this.Objects.campers[0].body.x;
+			var dogLeftOfCamper = this.Objects.hotdog.body.x < followingCamper.body.x;
 			this.Objects.hotdog.body.velocity.x = dogLeftOfCamper ? 100 : -100;
 			this.Objects.hotdog.scale.x = dogLeftOfCamper ? 1 : -1;
 		} else {
@@ -465,16 +440,112 @@ Level.prototype = {
 		else {
 			this.State.Poop.nextPoopTimeRemaining -= game.time.elapsed;
 		} --DEPRECATED-- */
-		
-
 
 	}
 };
 
-// load some levelsTitleAndMenu
-game.state.add("menu", new titleAndMenu());
+// add the scenes and levels used in the game
+game.state.add("menu", new TitleAndMenu());
 game.state.add("level_0", new Level("level_0"));
 game.state.add("level_1", new Level("level_1"));
+game.state.add("level_2", new Level("level_2"));
+game.state.add("level_3", new Level("level_3"));
 
-// start at level_0
+// start at the menu
 game.state.start("menu");
+
+
+
+
+var lines = [
+	"We're no strangers to love",
+	"You know the rules and so do I",
+	"A full commitment's what I'm thinking of",
+	"You wouldn't get this from any other guy",
+	"I just wanna tell you how I'm feeling",
+	"Gotta make you understand",
+	"",
+	"Never gonna give you up",
+	"Never gonna let you down",
+	"Never gonna run around and desert you",
+	"Never gonna make you cry",
+	"Never gonna say goodbye",
+	"Never gonna tell a lie and hurt you",
+	"",
+	"We've known each other for so long",
+	"Your heart's been aching but",
+	"You're too shy to say it",
+	"Inside we both know what's been going on",
+	"We know the game and we're gonna play it",
+	"And if you ask me how I'm feeling",
+	"Don't tell me you're too blind to see",
+	"",
+	"Never gonna give you up",
+	"Never gonna let you down",
+	"Never gonna run around and desert you",
+	"Never gonna make you cry",
+	"Never gonna say goodbye",
+	"Never gonna tell a lie and hurt you",
+	"",
+	"Never gonna give you up",
+	"Never gonna let you down",
+	"Never gonna run around and desert you",
+	"Never gonna make you cry",
+	"Never gonna say goodbye",
+	"Never gonna tell a lie and hurt you",
+	"",
+	"(Ooh, give you up)",
+	"(Ooh, give you up)",
+	"(Ooh)",
+	"Never gonna give, never gonna give",
+	"(Give you up)",
+	"(Ooh)",
+	"Never gonna give, never gonna give",
+	"(Give you up)",
+	"",
+	"We've know each other for so long",
+	"Your heart's been aching but",
+	"You're too shy to say it",
+	"Inside we both know what's been going on",
+	"We know the game and we're gonna play it",
+	"",
+	"I just wanna tell you how I'm feeling",
+	"Gotta make you understand",
+	"",
+	"Never gonna give you up",
+	"Never gonna let you down",
+	"Never gonna run around and desert you",
+	"Never gonna make you cry",
+	"Never gonna say goodbye",
+	"Never gonna tell a lie and hurt you",
+	"",
+	"Never gonna give you up",
+	"Never gonna let you down",
+	"Never gonna run around and desert you",
+	"Never gonna make you cry",
+	"Never gonna say goodbye",
+	"Never gonna tell a lie and hurt you",
+	"",
+	"Never gonna give you up",
+	"Never gonna let you down",
+	"Never gonna run around and desert you",
+	"Never gonna make you cry",
+	"Never gonna say goodbye",
+	"Never gonna tell a lie and hurt you"
+];
+
+/*
+
+I had to put in my github 
+
+i dont know ill push now and see but it's probs the collab term
+well just a heads up anyone can push as it uses my creds if i want to push but it goes up as septimus
+Oh yeah you can push all you want to the game dev one
+
+Yeah though i do everything through pull requests same as everyone :p
+
+*/
+// xD I love that idea!
+for(var i = 0; i < lines.length; i++) {
+	console.log(lines[i]);
+}
