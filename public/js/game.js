@@ -51,6 +51,25 @@ function Get(url) {
 	return res;
 }
 
+/**function titleAndMenu() {
+	this.Menu = ["Play", "Select Level", "Controls"];
+	this.Title = "Camper Survival";
+}
+
+titleAndMenu.prototype = {
+	preload: function() {
+		
+		
+		
+	},
+	create: function(){
+		
+	},
+	update: function(){
+		
+	}
+};*/
+
 function Level(level) {
 	
 	// Objects that are created throughout the game
@@ -81,6 +100,12 @@ function Level(level) {
 };
 
 Level.prototype = {
+	
+	// Kill/Death
+	kill: function(){
+		this.Objects.camper.body.x = this.Settings.Player.spawnPoint.x;
+		this.Objects.camper.body.y = this.Settings.Player.spawnPoint.y;
+	},
 	
 	// Movable box
 	spawnMovableBox: function(level, x, y) {
@@ -191,6 +216,48 @@ Level.prototype = {
 	
 	update: function () {
 		var self = this;
+		
+		// Death by going outside of world
+		if (this.Objects.camper.body.x < 0 || this.Objects.camper.body.x > this.Objects.map.widthInPixels || this.Objects.camper.body.y < 0 || this.Objects.camper.body.y > this.Objects.map.heightInPixels) {
+			this.kill();
+		}
+		
+		// Tile colllision
+		/* Logic fo working with collisions and collision data */
+		// TODO: add destruction for boxes and the dog no the lava/spikes
+		
+		var tileX = Math.round(this.Objects.camper.body.x / 32);
+		var tileY = Math.round(this.Objects.camper.body.y / 32);
+		
+		var tileBelow = this.Objects.map.getTile(tileX, tileY+3, this.Objects.layer, null);
+		var tileBelowR = this.Objects.map.getTile(tileX+1, tileY+2, this.Objects.layer, null);
+		var tileBelowL = this.Objects.map.getTile(tileX-1, tileY+2, this.Objects.layer, null);
+		var tileColliding = this.Objects.map.getTile(tileX, tileY+2, this.Objects.layer, null);
+		
+		
+		if(tileColliding != null){
+			if (tileColliding.collisionCallbackContext.index === 3  || tileColliding.collisionCallbackContext.index === 4) {
+				this.kill();
+			}
+		}
+		
+		if(tileBelowR != null){
+			if ((tileBelowR.collisionCallbackContext.index === 3  || tileBelowR.collisionCallbackContext.index === 4) && tileBelow === null) {
+				this.kill();
+			}
+		}
+		
+		if(tileBelowL != null){
+			if ((tileBelowL.collisionCallbackContext.index === 3  || tileBelowL.collisionCallbackContext.index === 4) && tileBelow === null) {
+				this.kill();
+			}
+		}
+		
+		if(tileBelow != null){
+			if (tileBelow.collisionCallbackContext.index === 3  || tileBelow.collisionCallbackContext.index === 4) {
+				this.kill();
+			}
+		}
 		
 		game.physics.arcade.collide(this.Objects.camper, this.Objects.layer);
 		game.physics.arcade.collide(this.Objects.hotdog, this.Objects.layer);
@@ -312,4 +379,4 @@ game.state.add("level_0", new Level("level_0"));
 game.state.add("level_1", new Level("level_1"));
 
 // start at level_0
-game.state.start("level_0");
+game.state.start("level_1");
