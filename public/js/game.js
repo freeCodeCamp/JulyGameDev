@@ -149,9 +149,10 @@ function Level(level) {
 Level.prototype = {
 	
 	// Kill/Death
-	kill: function(){
-		this.Objects.camper.body.x = this.Settings.Player.spawnPoint.x;
-		this.Objects.camper.body.y = this.Settings.Player.spawnPoint.y;
+	kill: function(index){
+		this.Objects.campers[index].body.x = this.Settings.Player.spawnPoint.x;
+		this.Objects.campers[index].body.y = this.Settings.Player.spawnPoint.y;
+		// Other stuff
 	},
 	
 	// Movable box
@@ -164,11 +165,11 @@ Level.prototype = {
 	},
 	
 	// Money!!!!
-	spawnMoney: function(level, x, y) {
+	/**spawnMoney: function(level, x, y) {
 		var newMoney = game.add.sprite(x, y, 'moneyz');
 		game.physics.arcade.enable(newMoney);
 		level.Objects.money.push(newMoney);
-	}, 
+	}, --DEPRECATED--*/
 	
 	preload: function (){
         game.load.tilemap('map', 'assets/' + this.Settings.mapFile, null, Phaser.Tilemap.TILED_JSON);
