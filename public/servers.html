@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+    	<meta charset="utf-8">
+    	<title>Twitch GameDev Marathon! - Server List</title>
+    	
+    	<script src="libs/jquery.min.js"></script>
+    	<link rel="stylesheet" href="styles/style.css" type="text/css"/>
+        <link href='//fonts.googleapis.com/css?family=Roboto+Condensed' rel='stylesheet' type='text/css'/>
+        
+        <script>
+            
+            $(document).ready(function(){
+                $.get('/api/list', function(data){
+                    $.each(JSON.parse(data), function(i, e){
+                        $("#list").append(
+                            $('<tr>').html([
+                                $('<td>').html(e.props.name),
+                                $('<td>').html(e.props.maxsize),
+                                $('<td>').html(
+                                    $('<a>')
+                                    // we cut off the 'server_' part because its ugly
+                                    .attr('href', window.location.origin + '/index.html#c=' + e.id.substr(7))
+                                    .html('Connect')
+                                ),
+                            ])
+                        );
+                    });
+                });
+            });
+            
+        </script>
+    </head>
+    <body>
+        <div class = "header">
+			<h1>Camper Survival</h1>
+			<h3>How long can YOU last! <!--:P--></h3>
+			<nav>
+				<ul>
+					<li><a href="index.html" title="Home...Duhh!!">Home</a></li>
+					<li class="current"><a href="servers.html" title="Servers">Server List</a></li>
+					<li><a href="startserver.html" title="Start Server">Start Server</a></li>
+					<li><a href="about.html" title-"Information about this game">About the Game</a></li>
+					<li><a href="contributors.html" title="See who contributed to the project">Contributors</a></li>
+				</ul>
+			</nav>
+		</div>
+        <table id="list" class="server-list" border="1">
+            <tr class='serverlist'><td>name</td><td>maxsize</td><td>Connect</td></tr>
+        </table>
+    </body>
+</html>

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Twitch GameDev Marathon! - Contributors</title>
+    <script src="libs/jquery.min.js"></script>
+    <link rel="stylesheet" href="styles/style.css" type="text/css"/>
+    <link rel="stylesheet" href="styles/contributors.css" type="text/css"/>
+    <link href='//fonts.googleapis.com/css?family=Roboto+Condensed' rel='stylesheet' type='text/css'/>
+    <script>
+        $(document).ready(function(){
+            $('.startserver-button').click(function(){
+                $.get('/api/server?name=' + $('.name').val() + '&maxsize=' + $('.maxsize').val(), function(data){
+                    
+                    var data = JSON.parse(data);
+                    
+                    // we cut off the 'server_' part because its ugly
+                    var connectLocation = data.id.substr(7);
+                    
+                    window.location.href = '/index.html#s=' + connectLocation;
+                    
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="header">
+		<h1>Camper Survival</h1>
+		<h3>How long can YOU last!</h3>
+		<nav>
+			<ul>
+				<li ><a href="index.html" title="Home...Duhh!!">Home</a></li>
+				<li><a href="servers.html" title="Servers">Server List</a></li>
+				<li class="current"><a href="startserver.html" title="Start Server">Start Server</a></li>
+				<li><a href="about.html" title-"Information about this game">About the Game</a></li>
+				<li><a href="contributors.html" title="See who contributed to the project">Contributors</a></li>
+			</ul>
+		</nav>
+    </div>
+    <div class="content">
+        <div class="startserver-content">
+            <input class="startserver-input name" type="text" placeholder="Server name"/>
+            <input class="startserver-input maxsize" type="text" placeholder="Max amount of clients"/>
+            <button class="startserver-button">Start server!</button>
+        </div>
+    </div>
+</body>

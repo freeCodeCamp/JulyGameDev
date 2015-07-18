@@ -1,0 +1,72 @@
+
+.code, .music {
+    padding-bottom: 20px;
+}
+
+.code, .music, .artwork {
+	margin-left: 35px
+	
+}
+
+.music li {
+    margin-top: 10px;
+}
+
+content li {
+	display: flex;
+  	flex-direction: row;
+  	height: 50px;
+  	align-items: center;
+  	padding-bottom: 10px;
+  	list-style: none;
+}
+
+
+li img {
+	border-radius: 50%;
+	width: 50px;
+	vertical-align: middle;
+	margin: 10px 0;
+}
+
+.grid span {
+	padding: 0px 20px;
+	vertical-align: middle;
+}
+
+h3 {
+    /*padding-top: 20px;
+    padding-bottom: 20px;*/
+}
+
+.col1 {
+    float: left;
+    width: 50%;
+}
+.col2 {
+    float: right;
+    width: 50%;
+}
+.grid:after {
+    content:"";
+    display: table;
+    clear: both;
+}
+
+@media screen and (max-width: 710px) {
+    .col1, 
+    .col2 {
+        float: none;
+        width: auto;
+    }
+}
+
+#title-divider {
+    width: 65%;
+    color: #75726F;
+    position: absolute;
+    height: 2px;
+    border: none;
+    margin-top: 2px;
+    background: -webkit-linear-gradient(left, #F46A07 , #898682);
+}
