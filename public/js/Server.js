@@ -1,5 +1,5 @@
 function Server(options, id) {
-    
+    console.log("Test");
     if(options.name) {
         this.name = options.name;
     }

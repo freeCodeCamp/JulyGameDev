@@ -99,6 +99,8 @@ titleAndMenu.prototype = {
 				var x = po.x;
 				var y = po.y;
 
+				/*There's no really clean way to modify these but as a rule of thumb each button is the position of the button before it + 45*/
+
 				if (this.range(x, 395, 628) && this.range(y, 149, 189)) {
 					console.log("Button1 clicked!");
 					this.currentMenu = "null";
@@ -119,10 +121,10 @@ function Level(level) {
 	
 	// Objects that are created throughout the game
 	this.Objects = {
-		poops: [],
+		//poops: [],  --DEPRECATED--
 		boxes: [],
-		money: [],
-		camper: null,
+		//money: [],  --DEPRECATED--
+		campers: [],
 		hotdog: null,
 		tent: null,
 		waitupmsg: null,
@@ -131,14 +133,14 @@ function Level(level) {
 	};
 	
 	// Various custom states of the objects
-	this.State = {
+	/**this.State = {
 		Player: {
 			score: 0
 		},
 		Poop: {
 			nextPoopTimeRemaining: Math.floor((Math.random() * 40) + 20) * 1000 // Initial poop
-		}
-	};
+		} 
+	}; --DEPRECATED--*/
 	
 	// Loaded on a per level basis
 	this.Settings = Get('/levels/' + level + '.json');
@@ -156,8 +158,8 @@ Level.prototype = {
 	spawnMovableBox: function(level, x, y) {
 		var newBox = game.add.sprite(x, y, 'boxmovable');
 		game.physics.arcade.enable(newBox);
-		newBox.body.gravity.y = 500;
-		newBox.body.drag.setTo(75);
+		newBox.body.gravity.y =1600;
+		newBox.body.drag.setTo(165);
 		level.Objects.boxes.push(newBox);
 	},
 	
@@ -166,20 +168,20 @@ Level.prototype = {
 		var newMoney = game.add.sprite(x, y, 'moneyz');
 		game.physics.arcade.enable(newMoney);
 		level.Objects.money.push(newMoney);
-	},
+	}, 
 	
 	preload: function (){
         game.load.tilemap('map', 'assets/' + this.Settings.mapFile, null, Phaser.Tilemap.TILED_JSON);
-        game.load.spritesheet('camper', 'assets/camper.png', 58, 88, 4);
-        game.load.spritesheet('poop', 'assets/poop.png', 16, 16, 2);
+        game.load.spritesheet('camper', 'assets/camper.png', 56, 95, 2);
+        //game.load.spritesheet('poop', 'assets/poop.png', 16, 16, 2);  --DEPRECATED--
         game.load.spritesheet('hotdog', 'assets/hotdog.png', 52, 29, 2);
         game.load.image('level-x32', 'assets/level-x32.png');
         game.load.image('tent', 'assets/tent.png');
-        game.load.image('flower', 'assets/flower.png');
+        //game.load.image('flower', 'assets/flower.png');  --DEPRECATED--
         game.load.image('waitup', 'assets/waitup.png');
-        game.load.image('tree', 'assets/tree.png');
+        //game.load.image('tree', 'assets/tree.png');  --DEPRECATED--
         game.load.image('boxmovable', 'assets/boxmovable.png');
-        game.load.image('moneyz', 'assets/moneyz.png');
+        //game.load.image('moneyz', 'assets/moneyz.png'); --DEPRECATED--
 	},
 	
 	create: function () {
@@ -190,7 +192,8 @@ Level.prototype = {
 	    game.physics.startSystem(Phaser.Physics.ARCADE);
 	    
 	   	// Trees
-	    game.add.sprite(600, 320, 'tree');
+	   	// Trees may ahve to be added as two seperate sprites :p or there'll be more like weird bushes
+	    //game.add.sprite(600, 320, 'tree');  --DEPRECATED--
 	    
 	   	// Create Tent
 	    this.Objects.tent = game.add.sprite(2815, 232, 'tent');
@@ -207,22 +210,22 @@ Level.prototype = {
 	    
 	    // Set pivot point of player to the center of the sprite
 	    this.Objects.camper.anchor.setTo(.5, .5);
-	    this.Objects.camper.animations.add('idle', [0, 3]);
-	    this.Objects.camper.animations.add('walk', [0, 2]);
-	    this.Objects.camper.animations.add('jumping', [2]);
+	    this.Objects.camper.animations.add('idle', [0, 0]);
+	    this.Objects.camper.animations.add('walk', [0, 1]);
+	    //this.Objects.camper.animations.add('jumping', [1, 1]); --DEPRECATED--
 	    
 	    //Creates the map
 	    this.Objects.map = game.add.tilemap('map');
 	    this.Objects.map.addTilesetImage('level-x32');
-	    
-	    $.each(this.Objects.map.layers[0]['data'], function(i, e){
+	    /**$.each(this.Objects.map.layers[0]['data'], function(i, e){
 	    	$.each(e, function(ii, ee){
 	    		
 	    	});
-	    });
+	    }); --REDUNDANT--*/
 	    
 	    //Set collisions
 	    this.Objects.map.setCollisionBetween(1, 2);
+	    console.log(this.Objects.map);
 	    
 	    //Intializes the world.
 	    this.Objects.layer = this.Objects.map.createLayer('World');
@@ -243,20 +246,22 @@ Level.prototype = {
 	    this.Objects.waitupmsg.visible = false;
 	    game.physics.arcade.enable(this.Objects.waitupmsg);
 	    
-	    // Flowers
-	    for (var i = 0; i < 10; ++i) {
+	    //* Flowers
+	    /*for (var i = 0; i < 10; ++i) {
 	    	game.add.sprite(300 + (i * 110 ) + Math.floor(Math.random() * (50 - 10)) + 10, 545, 'flower');
-	    }
+	    } --DEPRECATED--*/
 	    
 	    // Spawn Boxes
 	    this.spawnMovableBox(this, 1550, 300);
 	    this.spawnMovableBox(this, 1650, 300);
+	    this.spawnMovableBox(this, 1750, 300);
+	    this.spawnMovableBox(this, 1850, 300);
 	    
 	    // Spawn Money
-	    this.spawnMoney(this, 1100, 500);
+	    /**this.spawnMoney(this, 1100, 500);
 	    this.spawnMoney(this, 1200, 500);
 	    this.spawnMoney(this, 1300, 500);
-	    
+	    --DEPRECATED-- */
 	},
 	
 	update: function () {
@@ -286,7 +291,7 @@ Level.prototype = {
 			}
 		}
 		
-		if(tileBelowR != null){
+		/*if(tileBelowR != null){
 			if ((tileBelowR.collisionCallbackContext.index === 3  || tileBelowR.collisionCallbackContext.index === 4) && tileBelow === null) {
 				this.kill();
 			}
@@ -295,8 +300,8 @@ Level.prototype = {
 		if(tileBelowL != null){
 			if ((tileBelowL.collisionCallbackContext.index === 3  || tileBelowL.collisionCallbackContext.index === 4) && tileBelow === null) {
 				this.kill();
-			}
-		}
+			
+		}*/
 		
 		if(tileBelow != null){
 			if (tileBelow.collisionCallbackContext.index === 3  || tileBelow.collisionCallbackContext.index === 4) {
@@ -307,12 +312,14 @@ Level.prototype = {
 		game.physics.arcade.collide(this.Objects.camper, this.Objects.layer);
 		game.physics.arcade.collide(this.Objects.hotdog, this.Objects.layer);
 
+		/**
 		this.Objects.money.forEach(function (money) {
 			if (game.physics.arcade.collide(self.Objects.camper, money)) {
 				money.destroy();
 				self.State.Player.score += 100;
 			}
 		});
+		--DEPRECATED-- */
 
 		var onBox = false, boxArray = this.Objects.boxes;
 
@@ -356,6 +363,7 @@ Level.prototype = {
 		
 		if (keyBinds.jump() && (this.Objects.camper.body.onFloor() || onBox)) {
 			this.Objects.camper.body.velocity.y = -this.Settings.Player.verticalMoveSpeed;
+			//this.Objects.camper.animations.play('jumping', this.Settings.Player.walkAnimationSpeed, false); --DEPRECATED--
 		}
 
 		//Doggy Logic :)
@@ -382,6 +390,7 @@ Level.prototype = {
 		this.Objects.waitupmsg.visible = x_diff > 175;
 		
 		// Dog poop logic
+		/** 
 		while (this.Objects.poops.length > 20) {
 			var poop = this.Objects.poops.pop();
 			poop.destroy(); // limit the number of poops in the map
@@ -404,7 +413,7 @@ Level.prototype = {
 		}
 		else {
 			this.State.Poop.nextPoopTimeRemaining -= game.time.elapsed;
-		}
+		} --DEPRECATED-- */
 		
 		if (Phaser.Math.difference(this.Objects.camper.body.x, this.Objects.tent.body.x) <= 50) {
 			var lvlComp = game.add.text(430, 288, "Level Complete!", {font:"32px Arial", fill: "#000", align: "center"});
@@ -419,7 +428,7 @@ Level.prototype = {
 	}
 };
 
-// load some levels
+// load some levelsTitleAndMenu
 game.state.add("menu", new titleAndMenu());
 game.state.add("level_0", new Level("level_0"));
 game.state.add("level_1", new Level("level_1"));
