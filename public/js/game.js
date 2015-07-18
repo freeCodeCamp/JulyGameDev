@@ -132,6 +132,9 @@ function Level(level) {
 		layer: null
 	};
 	
+	this.currentCamper = 0;
+	this.changeTimer = new Date().getTime();
+	
 	// Various custom states of the objects
 	/**this.State = {
 		Player: {
@@ -159,7 +162,7 @@ Level.prototype = {
 	spawnMovableBox: function(level, x, y) {
 		var newBox = game.add.sprite(x, y, 'boxmovable');
 		game.physics.arcade.enable(newBox);
-		newBox.body.gravity.y =1600;
+		newBox.body.gravity.y = 1600;
 		newBox.body.drag.setTo(165);
 		level.Objects.boxes.push(newBox);
 	},
@@ -170,6 +173,17 @@ Level.prototype = {
 		game.physics.arcade.enable(newMoney);
 		level.Objects.money.push(newMoney);
 	}, --DEPRECATED--*/
+	
+	spawnCamper: function (spawnX, spawnY, camperImageName) {
+		var result = game.add.sprite(spawnX, spawnY, camperImageName);
+		game.physics.arcade.enable(result);
+		result.body.gravity.y = this.Settings.Player.gravity;
+		result.anchor.setTo(.5, .5);
+		result.animations.add('idle', [0, 0]);
+		result.animations.add('walk', [0, 1]);
+		//result.animations.add('jumping', [1, 1]); --DEPRECATED--
+		return result;
+	},
 	
 	preload: function (){
         game.load.tilemap('map', 'assets/' + this.Settings.mapFile, null, Phaser.Tilemap.TILED_JSON);
@@ -203,17 +217,8 @@ Level.prototype = {
 	    this.Objects.tent.scale.y = 2.5;
 	    
 	    //Create player (sprite)
-	    this.Objects.camper = game.add.sprite(this.Settings.Player.spawnPoint.x, this.Settings.Player.spawnPoint.y, 'camper');
-	    
-	    //Enable Physics for player
-	    game.physics.arcade.enable(this.Objects.camper);
-	    this.Objects.camper.body.gravity.y = this.Settings.Player.gravity;
-	    
-	    // Set pivot point of player to the center of the sprite
-	    this.Objects.camper.anchor.setTo(.5, .5);
-	    this.Objects.camper.animations.add('idle', [0, 0]);
-	    this.Objects.camper.animations.add('walk', [0, 1]);
-	    //this.Objects.camper.animations.add('jumping', [1, 1]); --DEPRECATED--
+	    this.Objects.campers[0] = this.spawnCamper(this.Settings.Player.spawnPoint.x, this.Settings.Player.spawnPoint.y, 'camper');
+	    this.Objects.campers[1] = this.spawnCamper(this.Settings.Player.spawnPoint.x + 100, this.Settings.Player.spawnPoint.y, 'camper');
 	    
 	    //Creates the map
 	    this.Objects.map = game.add.tilemap('map');
@@ -233,7 +238,7 @@ Level.prototype = {
 	    this.Objects.layer.resizeWorld();
 	    
 	    // Camera center follows player
-	    game.camera.follow(this.Objects.camper);
+	    game.camera.follow(this.Objects.campers[0]);
 	    
 	    // Create the dog (follower)
 	    this.Objects.hotdog = game.add.sprite(300, 550, 'hotdog');
@@ -254,9 +259,7 @@ Level.prototype = {
 	    
 	    // Spawn Boxes
 	    this.spawnMovableBox(this, 1550, 300);
-	    this.spawnMovableBox(this, 1650, 300);
-	    this.spawnMovableBox(this, 1750, 300);
-	    this.spawnMovableBox(this, 1850, 300);
+
 	    
 	    // Spawn Money
 	    /**this.spawnMoney(this, 1100, 500);
@@ -269,50 +272,53 @@ Level.prototype = {
 		var self = this;
 		
 		// Death by going outside of world
-		if (this.Objects.camper.body.x < 0 || this.Objects.camper.body.x > this.Objects.map.widthInPixels || this.Objects.camper.body.y < 0 || this.Objects.camper.body.y > this.Objects.map.heightInPixels) {
-			this.kill();
-		}
-		
-		// Tile colllision
-		/* Logic fo working with collisions and collision data */
-		// TODO: add destruction for boxes and the dog no the lava/spikes
-		
-		var tileX = Math.round(this.Objects.camper.body.x / 32);
-		var tileY = Math.round(this.Objects.camper.body.y / 32);
-		
-		var tileBelow = this.Objects.map.getTile(tileX, tileY+3, this.Objects.layer, null);
-		var tileBelowR = this.Objects.map.getTile(tileX+1, tileY+2, this.Objects.layer, null);
-		var tileBelowL = this.Objects.map.getTile(tileX-1, tileY+2, this.Objects.layer, null);
-		var tileColliding = this.Objects.map.getTile(tileX, tileY+2, this.Objects.layer, null);
-		
-		
-		if(tileColliding != null){
-			if (tileColliding.collisionCallbackContext.index === 3  || tileColliding.collisionCallbackContext.index === 4) {
-				this.kill();
+		this.Objects.campers.map(function(camper, index) {
+			if (camper.body.x < 0 || camper.body.x > self.Objects.map.widthInPixels || camper.body.y < 0 || camper.body.y > self.Objects.map.heightInPixels) {
+				self.kill();
 			}
-		}
-		
-		/*if(tileBelowR != null){
-			if ((tileBelowR.collisionCallbackContext.index === 3  || tileBelowR.collisionCallbackContext.index === 4) && tileBelow === null) {
-				this.kill();
-			}
-		}
-		
-		if(tileBelowL != null){
-			if ((tileBelowL.collisionCallbackContext.index === 3  || tileBelowL.collisionCallbackContext.index === 4) && tileBelow === null) {
-				this.kill();
 			
-		}*/
-		
-		if(tileBelow != null){
-			if (tileBelow.collisionCallbackContext.index === 3  || tileBelow.collisionCallbackContext.index === 4) {
-				this.kill();
+			// Tile colllision
+			/* Logic fo working with collisions and collision data */
+			// TODO: add destruction for boxes and the dog no the lava/spikes
+			
+			var tileX = Math.round(camper.body.x / 32);
+			var tileY = Math.round(camper.body.y / 32);
+			
+			var tileBelow = self.Objects.map.getTile(tileX, tileY+3, self.Objects.layer, null);
+			var tileBelowR = self.Objects.map.getTile(tileX+1, tileY+2, self.Objects.layer, null);
+			var tileBelowL = self.Objects.map.getTile(tileX-1, tileY+2, self.Objects.layer, null);
+			var tileColliding = self.Objects.map.getTile(tileX, tileY+2, self.Objects.layer, null);
+			
+			
+			if(tileColliding != null){
+				if (tileColliding.collisionCallbackContext.index === 3  || tileColliding.collisionCallbackContext.index === 4) {
+					self.kill();
+				}
 			}
-		}
+			
+			/*if(tileBelowR != null){
+				if ((tileBelowR.collisionCallbackContext.index === 3  || tileBelowR.collisionCallbackContext.index === 4) && tileBelow === null) {
+					self.kill();
+				}
+			}
+			
+			if(tileBelowL != null){
+				if ((tileBelowL.collisionCallbackContext.index === 3  || tileBelowL.collisionCallbackContext.index === 4) && tileBelow === null) {
+					self.kill();
+				
+			}*/
+			
+			if(tileBelow != null){
+				if (tileBelow.collisionCallbackContext.index === 3  || tileBelow.collisionCallbackContext.index === 4) {
+					self.kill();
+				}
+			}
+			
+			game.physics.arcade.collide(camper, self.Objects.layer);
+			
+			camper.body.velocity.x = 0;
+		});
 		
-		game.physics.arcade.collide(this.Objects.camper, this.Objects.layer);
-		game.physics.arcade.collide(this.Objects.hotdog, this.Objects.layer);
-
 		/**
 		this.Objects.money.forEach(function (money) {
 			if (game.physics.arcade.collide(self.Objects.camper, money)) {
@@ -321,6 +327,19 @@ Level.prototype = {
 			}
 		});
 		--DEPRECATED-- */
+
+		game.physics.arcade.collide(this.Objects.hotdog, this.Objects.layer);
+		
+		var localCamper = self.Objects.campers[self.currentCamper];
+		var otherCamper = self.Objects.campers[1 - self.currentCamper];
+		
+		
+		var campersColliding = game.physics.arcade.collide(this.Objects.campers[0], this.Objects.campers[1]);
+		var camperStandingOnCamper = false;
+		if (campersColliding && otherCamper.body.y >= (localCamper.body.y + localCamper.body.height)) {
+			camperStandingOnCamper = true;
+		}
+		
 
 		var onBox = false, boxArray = this.Objects.boxes;
 
@@ -331,15 +350,18 @@ Level.prototype = {
 			});
 		
 			game.physics.arcade.collide(box, self.Objects.layer);
-			var res = game.physics.arcade.collide(self.Objects.camper, box);
 			
-			if(res && box.body.y >= (self.Objects.camper.body.y + self.Objects.camper.body.height)) {
+			var res = game.physics.arcade.collide(localCamper, box);
+			
+			if(res && box.body.y >= (localCamper.body.y + localCamper.body.height)) {
 				onBox = true;
 			}
 		
 		});
 		
-		this.Objects.camper.body.velocity.x = 0;
+		
+		
+		
 		game.physics.arcade.moveToXY(
 			this.Objects.waitupmsg,
 			this.Objects.hotdog.body.x, 
@@ -348,34 +370,62 @@ Level.prototype = {
 		);
 		
 		//Player controls
-		if (keyBinds.moveBackwards()) {
-			this.Objects.camper.body.velocity.x = -this.Settings.Player.horizontalMoveSpeed;
-			this.Objects.camper.scale.x = -1;
-			this.Objects.camper.animations.play('walk', this.Settings.Player.walkAnimationSpeed, true);
-		}
-		else if (keyBinds.moveForwards()) {
-			this.Objects.camper.body.velocity.x = this.Settings.Player.horizontalMoveSpeed;
-			this.Objects.camper.scale.x = 1;
-			this.Objects.camper.animations.play('walk', this.Settings.Player.walkAnimationSpeed, true);
-		}
-		else {
-			this.Objects.camper.animations.play('idle', this.Settings.Player.idleAnimationSpeed, true);
+		
+		if (keyBinds.switchPlayer()) {
+			if (new Date().getTime() >= this.changeTimer) {
+				this.changeTimer = new Date().getTime() + 500;
+				if (this.currentCamper === 0) {
+					this.currentCamper = 1;
+					game.camera.follow(this.Objects.campers[1]);
+				} else {
+					this.currentCamper = 0;
+					game.camera.follow(this.Objects.campers[0]);
+				}
+			}
 		}
 		
-		if (keyBinds.jump() && (this.Objects.camper.body.onFloor() || onBox)) {
-			this.Objects.camper.body.velocity.y = -this.Settings.Player.verticalMoveSpeed;
-			//this.Objects.camper.animations.play('jumping', this.Settings.Player.walkAnimationSpeed, false); --DEPRECATED--
+		// Singleplayer
+		if (1 === 1) {
+			var camper = this.Objects.campers[this.currentCamper];
+			if (keyBinds.moveBackwards()) {
+				camper.body.velocity.x = -this.Settings.Player.horizontalMoveSpeed;
+				camper.scale.x = -1;
+				camper.animations.play('walk', this.Settings.Player.walkAnimationSpeed, true);
+			}
+			else if (keyBinds.moveForwards()) {
+				camper.body.velocity.x = this.Settings.Player.horizontalMoveSpeed;
+				camper.scale.x = 1;
+				camper.animations.play('walk', this.Settings.Player.walkAnimationSpeed, true);
+			}
+			else {
+				camper.animations.play('idle', this.Settings.Player.idleAnimationSpeed, true);
+			}
+			
+			if (keyBinds.jump() && (camper.body.onFloor() || onBox || camperStandingOnCamper)) {
+				camper.body.velocity.y = -this.Settings.Player.verticalMoveSpeed;
+				//this.Objects.camper.animations.play('jumping', this.Settings.Player.walkAnimationSpeed, false); --DEPRECATED--
+			}
+			
+			if (Phaser.Math.difference(camper.body.x, this.Objects.tent.body.x) <= 50) {
+				var lvlComp = game.add.text(430, 288, "Level Complete!", {font:"32px Arial", fill: "#000", align: "center"});
+				lvlComp.fixedToCamera = true;
+				lvlComp.cameraOffset.setTo(430, 288);
+				
+				setTimeout(function(){
+					game.state.start("level_1");
+				}, 2000);
+			}
 		}
 
 		//Doggy Logic :)
 		/*Meow Wuff?*/
 		
-		var x_diff = Phaser.Math.difference(this.Objects.hotdog.body.x, this.Objects.camper.body.x);
-		var y_diff = Phaser.Math.difference(this.Objects.hotdog.body.y, this.Objects.camper.body.y);
+		var x_diff = Phaser.Math.difference(this.Objects.hotdog.body.x, this.Objects.campers[0].body.x);
+		var y_diff = Phaser.Math.difference(this.Objects.hotdog.body.y, this.Objects.campers[0].body.y);
 		
 		if (x_diff > 50) {
 			this.Objects.hotdog.animations.play('walk', 5, true);
-			var dogLeftOfCamper = this.Objects.hotdog.body.x < this.Objects.camper.body.x;
+			var dogLeftOfCamper = this.Objects.hotdog.body.x < this.Objects.campers[0].body.x;
 			this.Objects.hotdog.body.velocity.x = dogLeftOfCamper ? 100 : -100;
 			this.Objects.hotdog.scale.x = dogLeftOfCamper ? 1 : -1;
 		} else {
@@ -416,15 +466,7 @@ Level.prototype = {
 			this.State.Poop.nextPoopTimeRemaining -= game.time.elapsed;
 		} --DEPRECATED-- */
 		
-		if (Phaser.Math.difference(this.Objects.camper.body.x, this.Objects.tent.body.x) <= 50) {
-			var lvlComp = game.add.text(430, 288, "Level Complete!", {font:"32px Arial", fill: "#000", align: "center"});
-			lvlComp.fixedToCamera = true;
-			lvlComp.cameraOffset.setTo(430, 288);
-			
-			setTimeout(function(){
-				game.state.start("level_1");
-			}, 2000);
-		}
+
 
 	}
 };

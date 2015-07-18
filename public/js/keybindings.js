@@ -26,6 +26,10 @@
         duck: function () {
             return  this.game.input.keyboard.isDown(Phaser.Keyboard.S) ||
                     this.game.input.keyboard.isDown(Phaser.Keyboard.DOWN);
+        },
+        
+        switchPlayer: function () {
+            return  this.game.input.keyboard.isDown(Phaser.Keyboard.C);
         }
     };
     
