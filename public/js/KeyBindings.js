@@ -40,6 +40,10 @@
         returnToMenu: function () {
             return  this.game.input.keyboard.isDown(Phaser.Keyboard.ESC) ||
                     this.game.input.keyboard.isDown(Phaser.Keyboard.M);
+        },
+        
+        flyMode: function () {
+            return  this.game.input.keyboard.isDown(Phaser.Keyboard.F);
         }
     };
     

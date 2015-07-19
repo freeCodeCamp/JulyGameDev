@@ -108,6 +108,12 @@ app.get('/api/client/ping', function(req, res){
 });
 
 // generates a server
+
+//when stuff is added to the global list of arrays you'll want to stored the gengerated id, the name, and the peer id
+//then you should be able to look up the stuff using any info
+//i think though at this point we should try to redesign in a more stateful way
+//like at this point we're getting confused by a system we designed which is yeah
+ 
 app.get('/api/server', function(req, res){
     var data = {};
     

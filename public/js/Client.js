@@ -1,6 +1,7 @@
 function Client(props) {
     
     var self = this;
+    var serverID;
     
     if(!props.username) {
         console.error('Error creating client "props.username" must be set!');
@@ -11,10 +12,20 @@ function Client(props) {
         return;
     }
     
+    /*$.get('/api/list', function(data){
+        $.each(JSON.parse(data), function(i, e){
+            serverID = e.id;
+        });
+    });*/
+    
     $.get('/api/client?username=' + props.username, function(data){
         data = JSON.parse(data);
         
-        console.log(data.id);
+        
+        var peer = new Peer()
+        console.log(data.id, props.serverid);
+        
+        console.log(props.serverid);
         
         self.peer = new Peer(data.id, {key: '55sj0os1x512a9k9'});
         

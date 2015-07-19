@@ -22,5 +22,8 @@
         	"min": 10,
 		    "max": 60
 		}
-	}
+	},
+	"Signs": [
+		{ "x": 26, "y": 6, "text": "Cheating? Really?" }
+	]
 }

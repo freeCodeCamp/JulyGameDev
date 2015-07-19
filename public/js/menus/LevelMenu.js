@@ -39,13 +39,14 @@ function LevelMenu(levels) {
 					var file = split[0] + '_' + (Number(split[1]) + 1);
 				}
 			};
+			
 			this.buttons[levels[z]] = {
 				offset_x: j,
 				offset_y: i,
 				styles: style,
 				text: file,
-				//image: '../../assets/level_images' + fName +
-				//	'.png', not implemented for now
+				image: 'assets/level_images/' + fName +
+					'.png',
 				callback: function(fName){
 					game.state.add(fName.text, new Level(fName.text));
 					game.state.start(fName.text);
@@ -54,28 +55,33 @@ function LevelMenu(levels) {
 			z++;
 		};
 	};
-	/*this.searchBox {
-		offset_x: 500,
-		offset_y: 0,
-		styles: {font_def: searchStyle, font_hover: searchStyle}
-		text: 'Enter level name here'
-		
-	}*/
 }
 
 //prototype
 LevelMenu.prototype = {
+	preload: function () {
+		var self = this;
+		
+		// load the images here
+		$.each(this.buttons, function(i, e) {
+			game.load.image(e.text, e.image);
+		});
+	},
 	create: function() {
 		
 		var self = this;
 		
 		game.stage.backgroundColor = "#DFE"; // ah that worked :p
 		
-		//positioning
+		//button rendering
 		var leftOffset = (game.width / 2);
 		var topOffset = game.height / 8.0;
 		
 		$.each(this.buttons, function(i, e){
+			
+			if (e.image !== undefined) {
+				game.add.image(leftOffset + (Number(e.offset_x) - 30), topOffset + (Number(e.offset_y) - 40), e.text);
+			}
 			
 			e.tObj = game.add.text(leftOffset + e.offset_x, topOffset + e.offset_y, e.text, e.styles.up);
 			

@@ -19,10 +19,8 @@
                         var data = JSON.parse(data);
                         
                         // we cut off the 'server_' part because its ugly
-                        var connectLocation = data.id.substr(7);
-                        Server({name: $('.name')});
-                        window.location.href = '/index.html?c=' + connectLocation;
-                        
+                        var connectLocation = data.id;
+                        window.location.href = '/index.html?s=' + connectLocation + "-" + $('.name').val();
                     });
                 });
             });

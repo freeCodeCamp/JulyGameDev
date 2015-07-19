@@ -14,7 +14,8 @@ function Level(level) {
 	
 	this.currentCamper = 0;
 	this.changeTimer = new Date().getTime();
-	
+	this.flyMode = false;
+	this.flyTimer = new Date().getTime();
 	// Various custom states of the objects
 	/**this.State = {
 		Poop: {
@@ -64,7 +65,7 @@ Level.prototype = {
 	},
 	
 	preload: function () {
-        game.load.tilemap('map', 'assets/' + this.Settings.mapFile, null, Phaser.Tilemap.TILED_JSON);
+        game.load.tilemap('map', 'assets/maps/' + this.Settings.mapFile, null, Phaser.Tilemap.TILED_JSON);
         game.load.spritesheet('camper', 'assets/camper.png', 56, 95, 2);
         //game.load.spritesheet('poop', 'assets/poop.png', 16, 16, 2);  --DEPRECATED--
         game.load.spritesheet('hotdog', 'assets/hotdog.png', 52, 29, 2);
@@ -166,7 +167,7 @@ Level.prototype = {
 				}
 			}
 			
-			/*if(tileBelowR != null){
+			if(tileBelowR != null){
 				if ((tileBelowR.collisionCallbackContext.index === 3  || tileBelowR.collisionCallbackContext.index === 4) && tileBelow === null) {
 					self.kill(index);
 				}
@@ -175,8 +176,8 @@ Level.prototype = {
 			if(tileBelowL != null){
 				if ((tileBelowL.collisionCallbackContext.index === 3  || tileBelowL.collisionCallbackContext.index === 4) && tileBelow === null) {
 					self.kill(index);
-				
-			}*/
+				}
+			}
 			
 			if(tileBelow != null){
 				if (tileBelow.collisionCallbackContext.index === 3  || tileBelow.collisionCallbackContext.index === 4) {
@@ -277,6 +278,13 @@ Level.prototype = {
 			}
 		}
 		
+		if (keyBinds.flyMode()) {
+			if (new Date().getTime() >= this.flyTimer) {
+				this.flyTimer = new Date().getTime() + 500;
+				this.flyMode = !this.flyMode;
+			}
+		}
+		
 		// Singleplayer
 		if (1 === 1) {
 			var camper = this.Objects.campers[this.currentCamper];
@@ -295,7 +303,7 @@ Level.prototype = {
 			}
 			
 			//if (keyBinds.jump() && (camper.body.onFloor() || onBox || camperStandingOnCamper)) {
-			if (keyBinds.jump() && (camper.body.onFloor() || onBox)) {
+			if (keyBinds.jump() && (camper.body.onFloor() || onBox || this.flyMode)) {
 						
 				camper.body.velocity.y = -this.Settings.Player.verticalMoveSpeed;
 				//this.Objects.camper.animations.play('jumping', this.Settings.Player.walkAnimationSpeed, false); --DEPRECATED--
@@ -309,8 +317,7 @@ Level.prototype = {
 				if (this.levelSwitchTimer === null) {
 					this.levelSwitchTimer = setTimeout(function () {
 						this.levelSwitchTimer = null;
-						console.log("Switching to state: " + self.Settings.NextLevel);
-						game.state.add(self.Settings.NextLevel);
+						game.state.add(self.Settings.NextLevel, new Level(self.Settings.NextLevel));
 						game.state.start(self.Settings.NextLevel);
 					}, 2000);
 				}
