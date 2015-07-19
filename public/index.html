@@ -15,8 +15,8 @@
 		<script src="libs/socket.io.min.js"></script>
 		<script src="libs/Font.js"></script>
 		
-		<script src="js/Server.js"></script>
-		<script src="js/Client.js"></script>
+		<!--<script src="js/Server.js"></script>
+		<script src="js/Client.js"></script> Not any more :p-->
 		
 		<script src="js/menus/HomeMenu.js"></script>
 		<script src="js/menus/LevelMenu.js"></script>
@@ -24,6 +24,8 @@
 		
 		<script src="js/KeyBindings.js"></script>
 		<script src="js/game.js"></script>
+		<script src="js/CliServ.js"></script>
+		<script src="js/Utils.js"></script>
 		
 		<!-- Stylesheets -->
 		<link rel="stylesheet" href="styles/style.css" type="text/css"/>
@@ -37,39 +39,9 @@
 		</style>
 		
 		<script>
-		// use window.load instead of document.ready so the browser
-		//	waits for the font to be loaded before displaying the menu
 			$(window).load(function(){
 				StartGame();
-				// Checks if URL has ?c=
-				var param = getParameter("c");
-				var serverParam = getParameter("s");
-				if (param !== false) {
-					// Connect
-					var username = prompt("Please fill in your username.");
-					Client({username: username, serverid: param});
-				} else if (serverParam !== false) {
-					var username = prompt("Please fill in your username.");
-					
-					
-					/*var serverParam = serverParam.split("-");
-					Server({name: serverParam[1]});
-					serverParam.reverse().pop().reverse().join("-");
-					Client({username: username, serverid: serverParam});*/
-				}
 			});
-			
-			function getParameter(theParameter) {
-			  var params = window.location.search.substr(1).split('&');
-			 
-			  for (var i = 0; i < params.length; i++) {
-			    var p=params[i].split('=');
-				if (p[0] == theParameter) {
-				  return decodeURIComponent(p[1]);
-				}
-			  }
-			  return false;
-			}
 		</script>
 		
 		<!-- Loads header and footer into the page -->

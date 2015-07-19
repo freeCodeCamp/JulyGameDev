@@ -1,176 +1,133 @@
 var express = require("express");
 var app = express();
+var fs = require('fs');
 
-//app.use(express.bodyParser());
+var players = [];
 
-var servers = [], clients = [];
-
-function genId(len) {
-    
-    var chars = "123456789abcdefghijklmnopqrstuvwxyz", id = '';
-    
-    for(var i = 0; i < len; i++) {
-        id += chars[Math.floor(Math.random() * chars.length)];
-    }
-    
-    return id;
-};
-
-// find an unused id
-function genFreeId(arr, suffix) {
-    
-    if(!arr) {
-        console.error("argument 'arr' of genFreeId must be set!");
-        return;
-    }
-    
-    if(suffix)
-        suffix += '_';
-    else
-        suffix = '';
-    
-    var id = suffix + genId(16); 
-    do {
-        var stop = true;
-        
-        for(var i = 0; i < arr.length; i++) {
-            if(id == arr[i].id) {
-                stop = false;
-                break;
-            }
-        }
-        
-        if(stop) break;
-        
-        id = suffix + genId(16);
-    } while(true);
-    
-    return id;
-}
-
-function PeerStruct(id, props) {
+function PeerStruct(id, username) {
     this.id = id;
+    this.username = username;
     this.lastPingTime = new Date().getTime();
-    this.props = props;
+    this.ingame = false;
 }
 
 // this will return a list of Peer id's that clients can connect to
 app.get('/api/list', function(req, res) {
-    res.send(JSON.stringify(servers));
-});
-
-// resets a servers lastPingTime
-app.get('/api/server/ping', function(req, res){
-    var data = {};
     
-    if(!req.query.id) {
-        data = {
-            error: "GET parameter 'id' missing from request"
-        };
-    }
-    else {
-        for(var i = 0; i < servers.length; i++) {
-            if(servers[i].id == req.query.id) {
-                servers[i].lastPingTime = new Date().getTime();
-                data = {
-                    success: "Ping time for '" + req.query.id + "' reset!"
-                };
-                break;
-            }
+    var clientsNotInGame = [];
+    
+    for(var i = 0; i < players.length; i++) {
+        if(players[i].ingame == false) {
+            clientsNotInGame.push({
+                id: players[i].id,
+                username: players[i].username
+            });
         }
     }
     
-    res.send(JSON.stringify(data));
+    res.send(JSON.stringify(clientsNotInGame));
 });
 
-// resets a clients lastPingTime
-app.get('/api/client/ping', function(req, res){
-    var data = {};
+app.get('/api/register', function(req, res){
+    var data = null;
     
     if(!req.query.id) {
-        data = {
-            error: "GET parameter 'id' missing from request"
-        };
+        data = { error: "'id' missing from request query!" };
+    }
+    else if(!req.query.username) {
+        data = { error: "'username' missing from request query!" };
     }
     else {
-        for(var i = 0; i < clients.length; i++) {
-            if(clients[i].id == req.query.id) {
-                clients[i].lastPingTime = new Date().getTime();
-                data = {
-                    success: "Ping time for '" + req.query.id + "' reset!"
-                };
+        for(var i = 0; i < players.length; i++) {
+            if(players[i].id == req.query.id) {
+                data = { error: 'Peer with that id already exists!' };
+                break;
+            }
+            else if(players[i].username == req.query.username) {
+                data = { error: 'Peer with that username already exists!' };
                 break;
             }
         }
+        
+        // if data wasn't set to anything from an error above
+        if(data == null) {
+            players.push(new PeerStruct(req.query.id, req.query.username));
+            data = {
+                success: 'Peer successfully added to server list!'
+            };
+        }
     }
     
-    res.send(JSON.stringify(data));
+    res.send(data);
 });
 
-// generates a server
-
-//when stuff is added to the global list of arrays you'll want to stored the gengerated id, the name, and the peer id
-//then you should be able to look up the stuff using any info
-//i think though at this point we should try to redesign in a more stateful way
-//like at this point we're getting confused by a system we designed which is yeah
- 
-app.get('/api/server', function(req, res){
+// this should be passed two args, p1 and p2, each with the id of the player
+app.get('/api/start', function(req, res){
     var data = {};
     
-    if(!req.query.name) {
-        data = {
-            error: 'Please specify a name for this server!'
-        };
+    if(!req.query.p1) {
+        data = { error: "'p1' missing from request query!" };
+    }
+    else if(!req.query.p2) {
+        data = { error: "'p2' missing from request query!" };
+    }
+    else if(req.query.p1 == req.query.p2) {
+        data = { error: "'p2' missing from request query!" };
     }
     else {
-        var id = genFreeId(servers, 'server');
-        servers.push(
-            new PeerStruct(id, {
-                name: req.query.name,
-                maxsize: 2,
-                currentplayers: 0
-            })
-        );
-        data = { id: id };
+        var p1 = null, p2 = null;
+        
+        for(var i = 0; i < players.length; i++) {
+            if(players[i].id == req.query.p1) {
+                if(players[i].ingame) {
+                    data = { error: "'p1' is already in game!" };
+                }
+                else {
+                    p1 = players[i];
+                }
+                break;
+            }
+            else if(players[i].id == req.query.p2) {
+                if(players[i].ingame) {
+                    data = { error: "'p2' is already in game!" };
+                }
+                else {
+                    p2 = players[i];
+                }
+                break;
+            }
+        }
+        
+        if(p1 == null) data = { error: "'p1' does not exists!" };
+        else if(p2 == null) data = { error: "'p2' does not exists!" };
+        
+        // if data wasn't set to anything from an error above
+        if(data == null) {
+            data = {
+                success: 'Peer successfully added to server list!'
+            };
+        }
     }
+    
     
     res.send(JSON.stringify(data));
 });
 
-// generates a client
-app.get('/api/client', function(req, res){
-    var data = {};
+app.get('/api/ping', function(req, res){
     
-    if(!req.query.username) {
-        data = {
-            error: 'Please specify a username for this client!'
-        };
+});
+
+app.get('/api/fileexists', function(req, res){
+    if(!req.query.file) {
+        res.send(JSON.stringify({error: "'file' missing from request query!"}));
     }
     else {
-        var id = genFreeId(clients, 'client');
-        clients.push(
-            new PeerStruct(id, {
-                username: req.query.username
-            })
-        );
-        data = { id: id };
+        fs.existsSync('assets/level_images/level_0.png', function(exists){
+            console.log(exists + ' hello');
+            res.send(JSON.stringify({exists: exists}));
+        });
     }
-    
-    res.send(JSON.stringify(data));
 });
-
-app.get('/api/echo', function(req, res) {
-    res.send('<script src = "https://code.jquery.com/jquery-2.1.4.min.js"></script><script>$.ajax({url: "/api/echo", method: "POST", data: {"meow":"meow"}}).done(function(msg){console.log(msg);});</script>');
-});
-
-
-app.get('/api/echo2', function(req, res) {
-    res.send('meow');
-});//done
-
-app.post('/api/echo', function(req,res){
-    console.log(req.body);
-});//probably should be handled by a seperate UDP server but like lol
 
 // serve static files from the public directory
 app.use(express.static(__dirname + '/public'));

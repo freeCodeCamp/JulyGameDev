@@ -2,7 +2,7 @@ function LevelMenu(levels) {
 	
 	//font, size and alignment for the buttons
 	var titleStyle = {font:"60px GoodDog", fill: "#f70", align: "center"};
-	var defStyle = {font:"40px GoodDog", fill: "darkgray", align: "center"};
+	var defStyle = {font:"40px GoodDog", fill: "#970", align: "center"};
 	var hoverStyle = {font:"60px GoodDog", fill: "black", align: "center"};
 	var searchStyle = {font:"30px Arial", fill: "black", align: "left"};
 
@@ -31,22 +31,36 @@ function LevelMenu(levels) {
 	for(var i = 150; i < 251; i = i + 100){
 		for(var j = -200; j < 201; j = j + 200){
 			var fName = levels[z];
-			if(fName != null) {
+			if(fName != undefined) {
 				var split = levels[z].split('_');
-				if((Number(split[1]))!= null || typeof (Number(split[1])) != int) {
+				if(split.length > 1){
+					if(split[1] != undefined && !(function(){return(/[\d]+/);})().test(split[1])){
 					var file = fName
-				}else {
-					var file = split[0] + '_' + (Number(split[1]) + 1);
+					}else { 
+						var file = split[0] + '_' + (Number(split[1]) + 1);
+					}
 				}
+				else {
+					var file = fName
+				}
+				
 			};
+			
+			console.log(Array(9).join('wat' -1) + ' WatMan');
+			
+			//API
+			
+			var levelImg = 'assets/level_images/level_0.png';
+			if(1==1){
+				levelImg = 'assets/level_images/' + fName + '.png';
+			}
 			
 			this.buttons[levels[z]] = {
 				offset_x: j,
 				offset_y: i,
 				styles: style,
 				text: file,
-				image: 'assets/level_images/' + fName +
-					'.png',
+				image: levelImg,
 				callback: function(fName){
 					game.state.add(fName.text, new Level(fName.text));
 					game.state.start(fName.text);
@@ -64,7 +78,11 @@ LevelMenu.prototype = {
 		
 		// load the images here
 		$.each(this.buttons, function(i, e) {
-			game.load.image(e.text, e.image);
+			if(e.image !== undefined) {
+				game.load.image(e.text, e.image);
+			}else {
+				//game.load.image(e.text, fallback_image);
+			}
 		});
 	},
 	create: function() {
@@ -81,7 +99,10 @@ LevelMenu.prototype = {
 			
 			if (e.image !== undefined) {
 				game.add.image(leftOffset + (Number(e.offset_x) - 30), topOffset + (Number(e.offset_y) - 40), e.text);
-			}
+			}/*else {
+				game.add.image(leftOffset + (Number(e.offset_x) - 30), topOffset + (Number(e.offset_y) - 40), e.text);
+
+			}*/
 			
 			e.tObj = game.add.text(leftOffset + e.offset_x, topOffset + e.offset_y, e.text, e.styles.up);
 			

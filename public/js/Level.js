@@ -105,7 +105,7 @@ Level.prototype = {
 	    if (this.Objects.nonCollidablesLayer) this.Objects.nonCollidablesLayer.resizeWorld();
 	    
 	    this.Objects.nonCollidablesLayer2 = this.Objects.map.createLayer('NonCollidables2'); // optional
-	    if (this.Objects.nonCollidablesLayer) this.Objects.nonCollidablesLayer.resizeWorld();
+	    if (this.Objects.nonCollidablesLayer2) this.Objects.nonCollidablesLayer2.resizeWorld();
 	    
 	    
 	 	this.Objects.layer = this.Objects.map.createLayer('World'); // mandatory

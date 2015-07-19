@@ -6,15 +6,11 @@ function server(){
     //document.addEventListener(/*event name*/, function (e) { ... }, false);
     
     //server with no client
-    this.peerID = createRdmId(16);
-    this.peer = new Peer(this.peerID, {key: '55sj0os1x512a9k9'});
-    
-    console.log(this.peerID);
+    this.peer = new Peer({key: '55sj0os1x512a9k9'});
     
     var campers = []; // Currently connected campers and their positions and usernames
     var chatDat = []; // Array with all chat message objects
     var chatMembers = ["SERVER"];
-    
     
     //instatciate a camper 
     var camper = function (name, peer_id, startX, startY){
@@ -75,24 +71,23 @@ function server(){
         document.addEventListener('coordUpdate', function (e) { 
             console.log(e);//No idea how this will help now but we can use it later to send new cord and join data to the other clients later
         }, false);
+        this.peer.on('data', function(){
+            console.log(arguments);   
+        });
     });
+    
+    /*var braceYourself = function (){
+        this.peer.send('yo');
+    }*/
 }
 
-
-
-function client(peerID){
+var client = function client(peerID){
     //Just a client
-    this.peer = new Peer(createRdmId(16), {key: '55sj0os1x512a9k9'});
+    this.peer = new Peer({key: '55sj0os1x512a9k9'});
     this.conn = peer.connect(peerID);
-    conn.on('open', function(){
-        self.conn.send('Hey server!');
+    this.conn.on('open', function(){
+        this.conn.send('Hey server!');
     });
-    
-    conn.on('data', function ) //is that the right function thing "data" hallu? pls? maybe?  something like this i
-    
-    /*Push to chat box*/
-    
-    
 }
 
 function cliserver(){
@@ -100,17 +95,3 @@ function cliserver(){
     server();
     client(server.peerID);
 }
-
-
-
-function createRdmId(length) {
-    var chars = "abcdefghijklmnopqrstuvwxyz123456789";
-    var result = "";
-    for (var i = 0; i < length; i++) {
-        var rdm = Math.floor(Math.random() * chars.length);
-        result += chars.charAt(rdm);
-    }
-    return result;
-}
-
-

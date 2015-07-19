@@ -10,7 +10,7 @@
 		"gravity": 500,
 		"spawnPoint": {
 			"x": 400,
-    		"y": 500
+    		"y": 300
 		}
 	},
 	"Boxes": [

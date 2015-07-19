@@ -15,14 +15,13 @@
                     $.each(JSON.parse(data), function(i, e){
                         $("#list").append(
                             $('<tr>').html([
-                                $('<td>').html(e.props.name),
-                                $('<td>').html(2),
-                                $('<td>').html(e.props.currentplayers),
+                                $('<td>').html(e.username),
+                                $('<td>').html(),
                                 $('<td>').html(
                                     $('<a>')
                                     // we cut off the 'server_' part because its ugly
                                     .attr('href', window.location.origin + '/index.html?c=' + e.id.substr(7))
-                                    .html('Connect')
+                                    .html('Join')
                                 ),
                             ])
                         );
@@ -45,10 +44,9 @@
         <div id="header"></div>
             <table id="list" class="server-list" border="1">
                 <tr class='serverlist'>
-                    <td class='t-name'>Name</td>
-                    <td class='t-size'>Maxsize</td>
-                    <td class='t-players'>Current Players</td>
-                    <td class='t-join'>Join</td>
+                    <td class='t-name'>Username</td>
+                    <td class='t-chat'>Chat</td>
+                    <td class='t-join'>Join Game</td>
                 </tr>
             </table>
         <div id="footer"></div>
