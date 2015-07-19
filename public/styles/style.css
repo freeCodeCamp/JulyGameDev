@@ -1,7 +1,14 @@
+/* ----- Reset Stuff ----- */
+
 * {
 	margin: 0;
 	padding: 0;
-	/*box-sizing: border-box;*/
+}
+
+.font{
+  font-family: GoodDog;
+  position: absolute;
+  z-index: -9000;
 }
 
 body {
@@ -12,11 +19,19 @@ body {
 	right: 0;
 	bottom: 0;
 	left: 0;
+	display: flex;
+	flex-direction: column;
+}
+
+a {
+  color : black;
 }
 
 ul {
   list-style-type: none;
 }
+
+/* ----- Header ----- */
 
 nav {
   position: relative;
@@ -120,7 +135,7 @@ nav a:hover{
   }
 }
 
-.header ul a {
+#header ul a {
 	
 	display: inline;
 	
@@ -136,16 +151,16 @@ nav a:hover{
 	flex-direction: column;
 }
 
-.header{
+#header{
 	background-color: rgb(52, 52, 52);
 	height: 150px;
 	padding: 20px;
 	color: white;
 	flex: 0 0 auto;
-
+  min-height: 190px;
 }
 
-.header h1 {
+#header h1 {
 	font-size: 50px;
 }
 
@@ -153,6 +168,8 @@ nav a:hover{
 .content {
 	flex: 1 0 auto;
 }
+
+/* ----- Game Canvas Styling ----- */
 
 .innerContent {
 	min-height: 100%;
@@ -173,15 +190,7 @@ canvas {
 	padding: 10px;
 }
 
-footer {
-	background-color: rgb(52, 52, 52);
-	height: 50px;
-	padding: 20px;
-	color: white;
-	flex: 0 0 auto;
-	position: float;
-	width: 100%;
-}
+/* ----- Server Page ----- */
 
 .server-list {
 	width: 100%;
@@ -245,6 +254,33 @@ footer {
   background-color: rgb(125, 125, 125);
 }
 
+.icon > svg path {
+    fill: #828282;
+}
+
+/* ----- About Page ----- */
+
+.about .description {
+  color: #aaaaaa;
+  text-align: center;
+}
+
+.about h1 {
+  text-align: center;
+}
+
+/* ----- Footer -----  */
+
+#footer {
+	background-color: rgb(52, 52, 52);
+	height: 50px;
+	padding: 20px;
+	color: white;
+	flex: 0 0 auto;
+	position: float;
+	width: 100%;
+}
+
 footer a {
   color: #f80;
   text-decoration: none;
@@ -268,8 +304,4 @@ footer .icon > svg {
   width: 12px;
   height: 12px;
   vertical-align: middle; 
-}
-
-.icon > svg path {
-    fill: #828282;
 }

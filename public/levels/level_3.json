@@ -1,6 +1,6 @@
 {
 	"mapFile": "map4.json",
-	"NextLevel": "menu",
+	"NextLevel": "level_4",
     "Player": {
 	    "walkAnimationSpeed": 5,
 		"idleAnimationSpeed": 2.5,

@@ -156,3 +156,13 @@ app.use(express.static(__dirname + '/public'));
 
 // bind the server to the port that c9 gives us
 app.listen(process.env.PORT);
+
+
+/*
+
+var express = require('express');
+var app = express();
+app.use(express.static(__dirname + '/public'));
+app.listen(3000, function() { console.log('listening')});
+
+*/

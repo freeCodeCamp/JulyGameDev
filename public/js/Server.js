@@ -1,15 +1,36 @@
-function Server(options, id) {
-    console.log("Test");
-    if(options.name) {
-        this.name = options.name;
+function Server(props) {
+    
+    var self = this;
+    
+    if(!props.name) {
+        console.error('Error creating server "props.name" must be set!');
+        return;
+    }
+    else if(!props.maxsize) {
+        console.error('Error creating server "props.maxsize" must be set!');
+        return;
     }
     
-    if(id) {
-        this.peer = new Peer(id, {key: '55sj0os1x512a9k9'});
-    }
-    else {
-        $.get('/api/server', function(data){
-            this.peer = new Peer(data.id, {key: '55sj0os1x512a9k9'});
+    $.get('/api/server?name=' + props.name + '&' + 'maxsize=' + props.maxsize, function(data){
+        
+        data = JSON.parse(data);
+        
+        console.log(data);
+        
+        self.peer = new Peer(data.id, {key: '55sj0os1x512a9k9'});
+        
+        self.peer.on('connection', function(connection){
+            self.conn = connection;
+            
+            self.conn.on('data', function(data){
+                console.log(data);
+            });
+            
+            self.conn.send('Hello client!');
+            
         });
-    }
+        
+    });
+    
+    
 }
