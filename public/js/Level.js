@@ -99,8 +99,15 @@ Level.prototype = {
 	    this.Objects.map.setCollisionBetween(1, 300);
 	    
 	    // Intialize the world
+	    
+	    
 	    this.Objects.nonCollidablesLayer = this.Objects.map.createLayer('NonCollidables'); // optional
 	    if (this.Objects.nonCollidablesLayer) this.Objects.nonCollidablesLayer.resizeWorld();
+	    
+	    this.Objects.nonCollidablesLayer2 = this.Objects.map.createLayer('NonCollidables2'); // optional
+	    if (this.Objects.nonCollidablesLayer) this.Objects.nonCollidablesLayer.resizeWorld();
+	    
+	    
 	 	this.Objects.layer = this.Objects.map.createLayer('World'); // mandatory
 	    this.Objects.layer.resizeWorld();
 	    

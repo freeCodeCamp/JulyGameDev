@@ -9,6 +9,8 @@ function server(){
     this.peerID = createRdmId(16);
     this.peer = new Peer(this.peerID, {key: '55sj0os1x512a9k9'});
     
+    console.log(this.peerID);
+    
     var campers = []; // Currently connected campers and their positions and usernames
     var chatDat = []; // Array with all chat message objects
     var chatMembers = ["SERVER"];
@@ -20,6 +22,7 @@ function server(){
         this.peer_id = peer_id;
         this.x = startX;
         this.y = startY;
+        chatMembers.push(this.name);
         
         function updateCoords(x, y){
             if(x === null){
@@ -40,10 +43,10 @@ function server(){
     }
     
     function camperByPeerId(peer_id) {
-        //yep ignore me :p
-        // :P
-        campers.forEach(function(){
-            
+        campers.forEach(function(i, e){
+            if (e.peer_id === peer_id) {
+                return e;
+            }
         });
     }
     
@@ -51,29 +54,44 @@ function server(){
         renderChat: function (){
             //show and update chatDat
         },
-        chatMessage: function (username, message){
+        chatMessage: function (username, message, hex_color){// Do you think we can give this a go? Done!
+            //Now when react/angular/ember/jquery(god forbid) renders the chat we'll use that hex color in a span of somefink
             //Add new message to the chat array
-            if(chatMembers.indexOf(username > -1)){
-                chatDat.push({username: username, message, message});
+            if(chatMembers.indexOf(username) > -1){/*this is to stop non-players from messaging*/
+                chatDat.push({username: username, color: hex_color, message: message});
             }
         }
-        //chatMembers up above is an array
+        //ChatMembers are auto appened when a camper joins
+        //SERVER is always a member
     };
+    
     // User connect handler
     this.peer.on('connection', function(connection){
-        var player_peer_id = connection.peer;
-        chat.chatMessage("SERVER",  + " has connected!");
+        campers.push(new camper("A_NAME", connection.peer, 200, 200));
+        chat.chatMessage("SERVER", "A_NAME has connected!", "#FF0000");
+        document.addEventListener('camperInit', function (e) { 
+            console.log(e);//No idea how this will help now but we can use it later to send new cord and join data to the other clients later
+        }, false);
+        document.addEventListener('coordUpdate', function (e) { 
+            console.log(e);//No idea how this will help now but we can use it later to send new cord and join data to the other clients later
+        }, false);
     });
-    
-    
-    
-    
 }
 
 
 
 function client(peerID){
-    //Just a  client
+    //Just a client
+    this.peer = new Peer(createRdmId(16), {key: '55sj0os1x512a9k9'});
+    this.conn = peer.connect(peerID);
+    conn.on('open', function(){
+        self.conn.send('Hey server!');
+    });
+    
+    conn.on('data', function ) //is that the right function thing "data" hallu? pls? maybe?  something like this i
+    
+    /*Push to chat box*/
+    
     
 }
 
@@ -83,28 +101,7 @@ function cliserver(){
     client(server.peerID);
 }
 
-/*
-Already confusing xD
-one sec
-so cliserver is just going to call server and then client
-we need to have it so that any one thing can work in isolation
-so we can unit test stuff as we go
-Then why do we need server
 
-
-server should start a server and allow connections 
-Then what's the point of cliserver, AAH gotcha
-just a neat way of calling 
-then you can have people acting as either a cliserver or a client
-Cool
-*/
-//I'm having some early concerns that none of this will actually work
-//I'll be back in 15 but the peerjs probably wont handle udp like transfers (rediculous levels of cord updates being sent around i think the host will shit itslef
-//Yeah it's worth a try
-//hopefully if this is written right it should be easy to modify later
-//okay one sec i'll be back in 15
-
-//We can atleast try, and hope it will work... Otherwise we can maybe do something with 2 clients racing and then being able to chat and see who completes levels faster
 
 function createRdmId(length) {
     var chars = "abcdefghijklmnopqrstuvwxyz123456789";
