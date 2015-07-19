@@ -59,7 +59,7 @@ nav .current a {
 
 nav a:hover{
   color:#000;
-  background-color: rgb(240,75,0);
+  background-color: #f70;
   -moz-transition: all 0.3s ease-in;
     /* WebKit */
   -webkit-transition: all 0.3s ease-in;
@@ -179,6 +179,8 @@ footer {
 	padding: 20px;
 	color: white;
 	flex: 0 0 auto;
+	position: float;
+	width: 100%;
 }
 
 .server-list {
@@ -191,7 +193,20 @@ footer {
 .server-list tr td {
 	color: white;
 	font-size: 32px;
-	padding: 32px;
+	padding: 10px;
+	text-align: center;
+}
+.t-name {
+  width: 40%;
+}
+.t-size {
+  width: 10%;
+}
+.t-players {
+  width: 25%;
+}
+.t-join {
+  width: 25%;
 }
 
 .server-list tr td a {
@@ -231,7 +246,7 @@ footer {
 }
 
 footer a {
-  color: rgb(0,0,0);
+  color: #f80;
   text-decoration: none;
 }
 

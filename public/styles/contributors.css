@@ -52,6 +52,10 @@ h2 {
     clear: both;
 }
 
+.content {
+    margin 0 auto;
+}
+
 @media screen and (max-width: 710px) {
     .col1, 
     .col2 {
@@ -67,5 +71,8 @@ h2 {
     height: 2px;
     border: none;
     margin-top: 2px;
-    background: -webkit-linear-gradient(left, #F46A07 , #898682);
+    background: -webkit-linear-gradient(left, #f70 , #ccc);
+    background: -o-linear-gradient(left, #f70 , #ccc);
+    background: -moz-linear-gradient(left, #f70 , #ccc);
+    background: linear-gradient(left, #f70 , #ccc);
 }

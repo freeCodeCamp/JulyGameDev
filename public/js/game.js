@@ -534,18 +534,7 @@ var lines = [
 	"Never gonna tell a lie and hurt you"
 ];
 
-/*
-
-I had to put in my github 
-
-i dont know ill push now and see but it's probs the collab term
-well just a heads up anyone can push as it uses my creds if i want to push but it goes up as septimus
-Oh yeah you can push all you want to the game dev one
-
-Yeah though i do everything through pull requests same as everyone :p
-
-*/
-// xD I love that idea!
+//this is fine though :p
 for(var i = 0; i < lines.length; i++) {
 	console.log(lines[i]);
 }
