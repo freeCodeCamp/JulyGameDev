@@ -18,10 +18,6 @@ function StartGame() {
 	
 	game.state.add('home_menu', new HomeMenu());
 
-	for(var i = 0; i < Global.levels.length; i++) {
-		game.state.add(Global.levels[i], new Level(Global.levels[i]));
-	}
-
 	// start at the menu
 	game.state.start("home_menu");
 }
@@ -47,8 +43,5 @@ function SelectLevel(level) {
 $(document).on("keydown", function (e) {
 	if (e.which != 116) { // we want to refresh often, so no preventing the F5 key!
 		e.preventDefault();
-	}
-	if(e.which){
-		
 	}
 });

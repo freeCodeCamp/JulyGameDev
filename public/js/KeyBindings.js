@@ -1,11 +1,11 @@
 
 (function (window, undefined) {
 
-    var keyBindings = function (game) {
+    var KeyBindings = function (game) {
         this.game = game;
     };
     
-    keyBindings.prototype = keyBindings.fn = {
+    KeyBindings.prototype = KeyBindings.fn = {
         
         jump: function () {
             return  this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) ||
@@ -35,9 +35,14 @@
         nextLevel: function () {
             // intended for debugging only
             return  this.game.input.keyboard.isDown(Phaser.Keyboard.L);
+        },
+        
+        returnToMenu: function () {
+            return  this.game.input.keyboard.isDown(Phaser.Keyboard.ESC) ||
+                    this.game.input.keyboard.isDown(Phaser.Keyboard.M);
         }
     };
     
-    window.KeyBindings = keyBindings;
+    window.KeyBindings = KeyBindings;
     
 })(window);

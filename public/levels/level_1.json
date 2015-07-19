@@ -22,5 +22,8 @@
         	"min": 10,
 		    "max": 60
 		}
-	}
+	},
+	"Signs": [
+		{ "x": 36, "y": 11, "text": "Those are spikes, don't fall in!" }
+	]
 }

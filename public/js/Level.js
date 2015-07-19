@@ -84,7 +84,7 @@ Level.prototype = {
 	    game.physics.startSystem(Phaser.Physics.ARCADE);
 	    
 	   	// Create Tent
-	    this.Objects.tent = game.add.sprite(2815, 20, 'tent');
+	    this.Objects.tent = game.add.sprite(2810, 20, 'tent');
 	    game.physics.arcade.enable(this.Objects.tent);
 	    this.Objects.tent.body.gravity.y = 1000;
 	    this.Objects.tent.scale.x = 2.5;
@@ -94,12 +94,12 @@ Level.prototype = {
 	    this.Objects.map = game.add.tilemap('map');
 	    this.Objects.map.addTilesetImage('level-x32');
 	    
-	    //Set collisions
-	    this.Objects.map.setCollisionBetween(1, 2);
+	    // Define which tiles cannot be moved through
+	    this.Objects.map.setCollisionBetween(1, 300);
 	    
 	    // Intialize the world
-	    var nonCollidables = this.Objects.map.createLayer('NonCollidables'); // optional
-	    if (nonCollidables) nonCollidables.resizeWorld();
+	    this.Objects.nonCollidablesLayer = this.Objects.map.createLayer('NonCollidables'); // optional
+	    if (this.Objects.nonCollidablesLayer) this.Objects.nonCollidablesLayer.resizeWorld();
 	 	this.Objects.layer = this.Objects.map.createLayer('World'); // mandatory
 	    this.Objects.layer.resizeWorld();
 	    
@@ -135,8 +135,15 @@ Level.prototype = {
 	update: function () {
 		var self = this;
 		
-		// Death by going outside of world
+		// Sign logic
+		if (this.Settings.Signs !== undefined) {
+			this.Settings.Signs.map(function (sign) {
+				if (sign.obj !== undefined) sign.obj.visible = false;
+			});	
+		}
+		
 		this.Objects.campers.map(function(camper, index) {
+			// Death by going outside of world
 			if (camper.body.x < 0 || camper.body.x > self.Objects.map.widthInPixels || camper.body.y < 0 || camper.body.y > self.Objects.map.heightInPixels) {
 				self.kill(index);
 			}
@@ -151,7 +158,7 @@ Level.prototype = {
 			var tileBelowR = self.Objects.map.getTile(tileX+1, tileY+2, self.Objects.layer, null);
 			var tileBelowL = self.Objects.map.getTile(tileX-1, tileY+2, self.Objects.layer, null);
 			var tileColliding = self.Objects.map.getTile(tileX, tileY+2, self.Objects.layer, null);
-			
+			var tileNonCollidableColliding = self.Objects.map.getTile(tileX, tileY+2, self.Objects.nonCollidablesLayer, null);
 			
 			if(tileColliding != null){
 				if (tileColliding.collisionCallbackContext.index === 3  || tileColliding.collisionCallbackContext.index === 4) {
@@ -177,6 +184,29 @@ Level.prototype = {
 				}
 			}
 			
+			// Sign collision logic
+			if (tileNonCollidableColliding != null) {
+				if (tileNonCollidableColliding.collisionCallbackContext.index == 16) {
+					var signUndefined = true;
+					if (self.Settings.Signs !== undefined) {
+						self.Settings.Signs.map(function (sign) {
+							if (sign.x == tileX && sign.y == tileY) {
+								signUndefined = false;
+								
+								// create text if needed
+								if (sign.obj === undefined) {
+									sign.obj = game.add.text(tileX * 32, tileY * 32 - 32, sign.text, {font:"18px Arial", fill: "#333", align: "center"});
+								}
+								sign.obj.visible = true;
+							}
+						});
+					}
+					if (signUndefined) {
+						console.log('undefined sign message @ tile: ' + tileX + ', ' + tileY);
+					}
+				}
+			}
+
 			game.physics.arcade.collide(camper, self.Objects.layer);
 			
 			camper.body.velocity.x = 0;
@@ -280,9 +310,14 @@ Level.prototype = {
 					this.levelSwitchTimer = setTimeout(function () {
 						this.levelSwitchTimer = null;
 						console.log("Switching to state: " + self.Settings.NextLevel);
+						game.state.add(self.Settings.NextLevel);
 						game.state.start(self.Settings.NextLevel);
 					}, 2000);
 				}
+			}
+			
+			if (keyBinds.returnToMenu()) {
+				game.state.start("home_menu");
 			}
 		}
 
@@ -308,7 +343,7 @@ Level.prototype = {
 			this.Objects.hotdog.body.velocity.y = -100;
 		}
 		
-		// If you move away from the dog too far, it will yell to you for you to wait for him!
+		// If you move away from the dog too far, it will yell to you to wait for him!
 		this.Objects.waitupmsg.visible = x_diff > 190;
 		
 		// Dog poop logic

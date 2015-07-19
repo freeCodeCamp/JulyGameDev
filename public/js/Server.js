@@ -6,13 +6,9 @@ function Server(props) {
         console.error('Error creating server "props.name" must be set!');
         return;
     }
-    else if(!props.maxsize) {
-        console.error('Error creating server "props.maxsize" must be set!');
-        return;
-    }
     
-    $.get('/api/server?name=' + props.name + '&' + 'maxsize=' + props.maxsize, function(data){
-        
+    $.get('/api/server?name=' + props.name, function(data){
+        console.log("Test");
         data = JSON.parse(data);
         
         console.log(data);

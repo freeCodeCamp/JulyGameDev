@@ -7,6 +7,10 @@
         <link rel="stylesheet" href="styles/style.css" type="text/css"/>
         <link rel="stylesheet" href="styles/contributors.css" type="text/css"/>
         <link href='//fonts.googleapis.com/css?family=Roboto+Condensed' rel='stylesheet' type='text/css'/>
+        <script src="libs/jquery.min.js"></script>
+		<script src="libs/peer.min.js"></script>
+		<script src="libs/socket.io.min.js"></script>
+		<script src="js/Server.js"></script>
         <script>
             $(document).ready(function(){
                 $('.startserver-button').click(function(){
@@ -16,8 +20,8 @@
                         
                         // we cut off the 'server_' part because its ugly
                         var connectLocation = data.id.substr(7);
-                        
-                        window.location.href = '/index.html#s=' + connectLocation;
+                        Server({name: $('.name')});
+                        window.location.href = '/index.html?c=' + connectLocation;
                         
                     });
                 });

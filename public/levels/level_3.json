@@ -14,8 +14,7 @@
 	},
 	"Boxes": [
 		{ "x": 600, "y": 100 },
-		{ "x": 1200, "y": 100 },
-		{ "x": 1600, "y": 100 }
+		{ "x": 1200, "y": 100 }
 	],
 	"Dog": {
 		"horizontalMoveSpeed": 100
@@ -25,5 +24,8 @@
         	"min": 10,
 		    "max": 60
 		}
-	}
+	},
+	"Signs": [
+		{ "x": 21, "y": 15, "text": "Your friend needs to help you!" }
+	]
 }

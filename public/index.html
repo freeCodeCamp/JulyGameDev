@@ -3,7 +3,11 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Twitch GameDev Marathon! - Home</title>
-		
+		<script>
+			if (window.location.protocol === "https:") {
+	    		window.location.href = "http:" + window.location.href.substring(window.location.protocol.length);
+			}
+    	</script>
 		<!-- Libraries that we didn't make -->
 		<script src="libs/jquery.min.js"></script>
 		<script src="libs/peer.min.js"></script>
@@ -18,7 +22,7 @@
 		<script src="js/menus/LevelMenu.js"></script>
 		<script src="js/Level.js"></script>
 		
-		<script src="js/keybindings.js"></script>
+		<script src="js/KeyBindings.js"></script>
 		<script src="js/game.js"></script>
 		
 		<!-- Stylesheets -->
@@ -33,13 +37,30 @@
 		</style>
 		
 		<script>
-			$(document).ready(function(){
-				var font = new Font();
-				font.src = "styles/fonts/GoodDog.ttf";
-				font.onload = function () {
-				  StartGame();
+		// use window.load instead of document.ready so the browser
+		//	waits for the font to be loaded before displaying the menu
+			$(window).load(function(){
+				StartGame();
+				// Checks if URL has ?c=
+				var param = getParameter("c");
+				if (param !== false) {
+					// Connect
+					var username = prompt("Please fill in your username.");
+					$.
 				}
 			});
+			
+			function getParameter(theParameter) { 
+			  var params = window.location.search.substr(1).split('&');
+			 
+			  for (var i = 0; i < params.length; i++) {
+			    var p=params[i].split('=');
+				if (p[0] == theParameter) {
+				  return decodeURIComponent(p[1]);
+				}
+			  }
+			  return false;
+			}
 		</script>
 		
 		<!-- Loads header and footer into the page -->
@@ -60,17 +81,17 @@
 					<div id="gameBox"></div>
 					<div class="textContent">
 						<h4>Controls</h4>
-						<p>
-							<p><span>Move Left: left arrow or "A"</span></p>
+						<div>
+							<p><span>Move left: left arrow or "A"</span></p>
 							<p><span>Move right: right arrow or "D"</span></p>
 							<p><span>Jump: up arrow, "space" or "W"</span></p>
-							<p><span>Switch Player: "C"</span></p>
+							<p><span>Switch player: "C"</span></p>
+							<p><span>Return to menu: "escape" or "M"</span></p>
 							<p><span>Complete level: "L"</span></p>
-						</p>
+						</div>
 					</div>
 				</div>
 			</div>
 		<div id="footer"></div>
 	</body>
 </html>
- 

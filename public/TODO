@@ -1,19 +1,16 @@
 ---- Game/Code Todo ----
 multiplayer
-level switching
 chat
 fix campers pushing boxes through walls
 MUSIC...
-GoodDog font still needs to be loaded correctly
-load levelmenu when clicked
+GoodDog font still needs to be loaded correctly = FIXED
 
 ---- Site Todo ----
-
+fix header and footer stretching the page creating overflow
 
 ----Graphics Todo----
 Tent
 player2
 pretty 'wall' textures
-Paralax Background????
-
+Parallax Background????
 player revamp

@@ -1,8 +1,13 @@
 function LevelMenu(levels) {
+	
+	//font, size and alignment for the buttons
 	var titleStyle = {font:"60px GoodDog", fill: "#f70", align: "center"};
-	var defStyle = {font:"20px GoodDog", fill: "darkgray", align: "center"};
-	var hoverStyle = {font:"20px GoodDog", fill: "black", align: "center"};
+	var defStyle = {font:"40px GoodDog", fill: "darkgray", align: "center"};
+	var hoverStyle = {font:"60px GoodDog", fill: "black", align: "center"};
+	var searchStyle = {font:"30px Arial", fill: "black", align: "left"};
 
+	
+	// populates the page with text title text
 	this.buttons = {
 		title: { 
 			offset_x: 0, offset_y: 0, isLink: false, tObj: null,
@@ -14,89 +19,51 @@ function LevelMenu(levels) {
 			}
 		}
 	};
-	var line = 0;
-	var col = 0;
 	
-	for(var x = -500; x < 501; x+500){for(var y = 200; y < 401; y+200){
-			console.log(x,y);
-		}
-	}
-		
-		
-		
-		
-		
-		
-	//#original loop - best loop .com
-	var col = 0;
-	var line = 0;
-	for(var i = 0; i <= levels.length; i++){	
-		switch(col){
-			case 0:
-				//left
-				break;
-			case 1:
-				//middle
-				break;
-			case 2:
-				//right
-				break;
-		}
-		
-		var menuTopOffset = 100 + (55*line)
-		
-		col++;
-		if(col==3){
-			col = 0;
-			line++;
-		}
-	}
-	//this.textBox = 
-	
+	//sets all buttons with same style attributes
 	var style = {
 		fnt_def: defStyle, 
 		fnt_hover: hoverStyle
 	};
-	/*var mainOffset = 200;
-	$.each(levels, function(i, e){
-		this.buttons[e] = {
-		
-		 level_0         level_1        level_2
-		   level_3         level_4        level_5
-			var x = -500
-			var y = false
-			var last = []
-			
-			
-			switch(x) {guys i figured it out
-				case null: 
-					if(y === false)offset_x = -500
-					offset_y = 200
-					break;
-				case -500: 
-					offset_x = 0
-					break;
-				case 0:
-					offset_x = 500
-					break;
-				case 500:
-					offset_y = 400
+	
+	//populates page with level buttons
+	var z = '0';
+	for(var i = 150; i < 251; i = i + 100){
+		for(var j = -200; j < 201; j = j + 200){
+			var fName = levels[z];
+			if(fName != null) {
+				var split = levels[z].split('_');
+				if((Number(split[1]))!= null || typeof (Number(split[1])) != int) {
+					var file = fName
+				}else {
+					var file = split[0] + '_' + (Number(split[1]) + 1);
+				}
+			};
+			this.buttons[levels[z]] = {
+				offset_x: j,
+				offset_y: i,
+				styles: style,
+				text: file,
+				//image: '../../assets/level_images' + fName +
+				//	'.png', not implemented for now
+				callback: function(fName){
+					game.state.add(fName.text, new Level(fName.text));
+					game.state.start(fName.text);
+				}
 			}
-		
-			
-			
-			//offset_x: (mainOffset + this.buttons.indexof(e) * 45), //output should be -500|0|500
-			//offset_y: (mainOffset + this.buttons.indexof(e) * 45), //output should be 200|400
-			/*styles: style,
-			text: e,
-			callback: function(){
-				game.state.add(e, new Level(e));
-				game.state.start(e);
-			}
+			z++;
 		};
-	});*/
+	};
+	/*this.searchBox {
+		offset_x: 500,
+		offset_y: 0,
+		styles: {font_def: searchStyle, font_hover: searchStyle}
+		text: 'Enter level name here'
+		
+	}*/
 }
 
+//prototype
 LevelMenu.prototype = {
 	create: function() {
 		
@@ -104,6 +71,7 @@ LevelMenu.prototype = {
 		
 		game.stage.backgroundColor = "#DFE"; // ah that worked :p
 		
+		//positioning
 		var leftOffset = (game.width / 2);
 		var topOffset = game.height / 8.0;
 		

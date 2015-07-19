@@ -22,5 +22,8 @@
         	"min": 10,
 		    "max": 60
 		}
-	}
+	},
+	"Signs": [
+		{ "x": 72, "y": 10, "text": "So much jumping?!" }
+	]
 }

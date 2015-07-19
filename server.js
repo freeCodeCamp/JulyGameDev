@@ -1,6 +1,8 @@
 var express = require("express");
 var app = express();
 
+//app.use(express.bodyParser());
+
 var servers = [], clients = [];
 
 function genId(len) {
@@ -151,18 +153,21 @@ app.get('/api/client', function(req, res){
     res.send(JSON.stringify(data));
 });
 
+app.get('/api/echo', function(req, res) {
+    res.send('<script src = "https://code.jquery.com/jquery-2.1.4.min.js"></script><script>$.ajax({url: "/api/echo", method: "POST", data: {"meow":"meow"}}).done(function(msg){console.log(msg);});</script>');
+});
+
+
+app.get('/api/echo2', function(req, res) {
+    res.send('meow');
+});//done
+
+app.post('/api/echo', function(req,res){
+    console.log(req.body);
+});//probably should be handled by a seperate UDP server but like lol
+
 // serve static files from the public directory
 app.use(express.static(__dirname + '/public'));
 
 // bind the server to the port that c9 gives us
 app.listen(process.env.PORT);
-
-
-/*
-
-var express = require('express');
-var app = express();
-app.use(express.static(__dirname + '/public'));
-app.listen(3000, function() { console.log('listening')});
-
-*/

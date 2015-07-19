@@ -12,10 +12,9 @@ function Client(props) {
     }
     
     $.get('/api/client?username=' + props.username, function(data){
-        
         data = JSON.parse(data);
         
-        console.log(data);
+        console.log(data.id);
         
         self.peer = new Peer(data.id, {key: '55sj0os1x512a9k9'});
         

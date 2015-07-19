@@ -23,6 +23,7 @@ body {
 	flex-direction: column;
 }
 
+
 a {
   color : black;
 }
@@ -154,10 +155,12 @@ nav a:hover{
 #header{
 	background-color: rgb(52, 52, 52);
 	height: 150px;
-	padding: 20px;
 	color: white;
 	flex: 0 0 auto;
   min-height: 190px;
+  width: calc(100% - 40px);
+  padding: 20px;
+
 }
 
 #header h1 {
@@ -274,11 +277,11 @@ canvas {
 #footer {
 	background-color: rgb(52, 52, 52);
 	height: 50px;
-	padding: 20px;
 	color: white;
 	flex: 0 0 auto;
 	position: float;
-	width: 100%;
+	width: calc(100% - 40px);
+	padding: 20px;
 }
 
 footer a {

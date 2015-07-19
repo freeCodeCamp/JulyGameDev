@@ -24,5 +24,9 @@
         	"min": 10,
 		    "max": 60
 		}
-	}
+	},
+	"Signs": [
+		{ "x": 19, "y": 15, "text": "Welcome to Camper Survival!" },
+		{ "x": 62, "y": 9, "text": "Yay! You made it!" }
+	]
 }
