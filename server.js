@@ -43,10 +43,10 @@ app.get('/api/register', function(req, res){
                 data = { error: 'Peer with that id already exists!' };
                 break;
             }
-            else if(players[i].username == req.query.username) {
-                data = { error: 'Peer with that username already exists!' };
-                break;
-            }
+            //else if(players[i].username == req.query.username) {
+            //    data = { error: 'Peer with that username already exists!' };
+            //    break;
+            //}
         }
         
         // if data wasn't set to anything from an error above
@@ -117,13 +117,12 @@ app.get('/api/ping', function(req, res){
     
 });
 
-app.get('/api/fileexists', function(req, res){
+app.get('/api/fileExists', function(req, res){
     if(!req.query.file) {
         res.send(JSON.stringify({error: "'file' missing from request query!"}));
     }
     else {
-        fs.existsSync('assets/level_images/level_0.png', function(exists){
-            console.log(exists + ' hello');
+        fs.exists(__dirname + '/public/' + req.query.file, function(exists){
             res.send(JSON.stringify({exists: exists}));
         });
     }

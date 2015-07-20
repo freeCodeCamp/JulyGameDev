@@ -3,20 +3,19 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Twitch GameDev Marathon! - Home</title>
+		
 		<script>
 			if (window.location.protocol === "https:") {
 	    		window.location.href = "http:" + window.location.href.substring(window.location.protocol.length);
 			}
     	</script>
+    	
 		<!-- Libraries that we didn't make -->
 		<script src="libs/jquery.min.js"></script>
 		<script src="libs/peer.min.js"></script>
 		<script src="libs/phaser.min.js"></script>
 		<script src="libs/socket.io.min.js"></script>
 		<script src="libs/Font.js"></script>
-		
-		<!--<script src="js/Server.js"></script>
-		<script src="js/Client.js"></script> Not any more :p-->
 		
 		<script src="js/menus/HomeMenu.js"></script>
 		<script src="js/menus/LevelMenu.js"></script>
@@ -76,12 +75,3 @@
 		<div id="footer"></div>
 	</body>
 </html>
-
-<!--
-$.get('/api/client', function(data){
-    $.each(JSON.parse(data), function(i, e){
-    	console.log(e.username);
-    });
-});
-
--->

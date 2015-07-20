@@ -8,7 +8,7 @@ var Global = {
 	'levels': [
 		'level_0',
 		'level_1',
-		'george',
+		//'george', //for testing purposes :P
 		'level_2',
 		'level_3',
 		'level_4',
@@ -31,23 +31,6 @@ var Global = {
 		'Philip'
 	]
 };
-
-function encodeState() {
-	var state = [];
-	$.each(game.state.getCurrentState().Objects, function(i, e){
-		state.push({
-			id: e.id,
-			x: e.body.x,
-			y: e.body.y,
-		})
-	});
-	return state;
-}
-
-// state should be an array
-function decodeState(state) {
-	
-}
 	
 function StartGame() {
 	
@@ -76,21 +59,54 @@ function StartGame() {
 	
 	peer.on('open', function(id){
 		var res = Get('/api/register?id=' + id + '&username=' + username);
+		console.log(res);
 	});
 	
 	peer.on('connection', function(conn){
 		
+		console.log('connection!');
+		
+		var otherCharacter = game.state.getCurrentState().getObjectById('camper_1');
+		otherCharacter.sync = false;
+		otherCharacter.obj.body.moves = false;
+		
 		// we should be receiving a position from the other peer
-		conn.on('data', function(data){
-			decodeState(JSON.parse(data));
-		});
+		conn.on('data', OnPeerData);
 		
 		// send our worlds state 30 times a second
-		window.setInterval(function(){
-			conn.send(encodeState());
-		}, 1000 / 30);
+		StartPeerSync(conn);
 		
 	});
+}
+
+function OnPeerData(data){
+	var state = game.state.getCurrentState();
+	
+	// this will ensure that this is only called on the Level state
+	if(state.decodeState) {
+		state.decodeState(JSON.parse(data));
+	}
+}
+
+function StartPeerSync(conn) {
+	window.setInterval(function(){
+		var state = game.state.getCurrentState();
+		
+		// this will ensure that this is only called on the Level state
+		if(state.encodeState) {
+			conn.send(JSON.stringify(state.encodeState()));
+		}
+	}, 1000 / 30);
+}
+
+function Connect(id) {
+	var otherCharacter = game.state.getCurrentState().getObjectById('camper_0');
+	otherCharacter.sync = false;
+	otherCharacter.obj.body.moves = false;
+	
+	var conn = peer.connect(id);
+	conn.on('data', OnPeerData);
+	StartPeerSync(conn);
 }
 
 // get a file

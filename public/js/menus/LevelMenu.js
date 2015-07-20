@@ -2,7 +2,7 @@ function LevelMenu(levels) {
 	
 	//font, size and alignment for the buttons
 	var titleStyle = {font:"60px GoodDog", fill: "#f70", align: "center"};
-	var defStyle = {font:"40px GoodDog", fill: "#970", align: "center"};
+	var defStyle = {font:"40px GoodDog", fill: "black", align: "center"};
 	var hoverStyle = {font:"60px GoodDog", fill: "black", align: "center"};
 	var searchStyle = {font:"30px Arial", fill: "black", align: "left"};
 
@@ -46,13 +46,12 @@ function LevelMenu(levels) {
 				
 			};
 			
-			console.log(Array(9).join('wat' -1) + ' WatMan');
+			var levelImg = 'levels/thumbs/level_0.png';
 			
-			//API
+			var res = JSON.parse(Get('api/fileExists?file=' + 'levels/thumbs/' + fName + '.png'));
 			
-			var levelImg = 'assets/level_images/level_0.png';
-			if(1==1){
-				levelImg = 'assets/level_images/' + fName + '.png';
+			if(res.exists) {
+				levelImg = 'levels/thumbs/' + fName + '.png';
 			}
 			
 			this.buttons[levels[z]] = {
@@ -98,7 +97,7 @@ LevelMenu.prototype = {
 		$.each(this.buttons, function(i, e){
 			
 			if (e.image !== undefined) {
-				game.add.image(leftOffset + (Number(e.offset_x) - 30), topOffset + (Number(e.offset_y) - 40), e.text);
+				game.add.image(leftOffset + (Number(e.offset_x) + 50), topOffset + (Number(e.offset_y) - 35), e.text);
 			}/*else {
 				game.add.image(leftOffset + (Number(e.offset_x) - 30), topOffset + (Number(e.offset_y) - 40), e.text);
 
@@ -114,11 +113,7 @@ LevelMenu.prototype = {
 			
 			e.tObj.events.onInputOver.add(function(){
 				e.tObj.setStyle(e.styles.fnt_hover);
-				if(e.isLink) {
-					game.canvas.style.cursor = "pointer";
-				} else {
-					game.canvas.style.cursor = "default";
-				}
+				game.canvas.style.cursor = "pointer";
 			}, self);
 			
 			e.tObj.events.onInputOut.add(function(){
